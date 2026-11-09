@@ -15,8 +15,8 @@ getStreams(tmdbId, mediaType, season, episode)
   fetch is Cloudflare-blocked on some sources. Nuvio uses a native HTTP client.
 - Probes the first playable stream: HLS must return `#EXTM3U`; MP4 must answer
   `200/206` to a small Range request.
-- Asserts One Piece S1E1 and S21E1 resolve to different URLs for both Anizium and
-  ÇizgiMax (absolute episode mapping).
+- Asserts One Piece S1E1 and S23E1173 resolve to different episodes for both
+  Anizium and ÇizgiMax. Anizium's URL must contain `1173`.
 
 ## Commands
 

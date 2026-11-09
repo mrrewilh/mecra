@@ -44,12 +44,12 @@ const cases = [
   { name: 'diziyou', id: '1396', type: 'tv', season: 1, episode: 1, label: 'Breaking Bad S1E1' },
   { name: 'yabancidizi', id: '1408', type: 'tv', season: 1, episode: 1, label: 'House M.D. S1E1' },
   { name: 'cizgimax', id: '37854', type: 'tv', season: 1, episode: 1, label: 'One Piece S1E1' },
-  { name: 'cizgimax', id: '37854', type: 'tv', season: 21, episode: 1, label: 'One Piece S21E1' },
+  { name: 'cizgimax', id: '37854', type: 'tv', season: 23, episode: 1173, label: 'One Piece S23E1173' },
   { name: 'cizgimax', id: '46260', type: 'tv', season: 1, episode: 1, label: 'Naruto S1E1' },
   { name: 'cizgimax', id: '65334', type: 'tv', season: 6, episode: 26, label: 'Miraculous S6E26' },
   { name: 'cizgimax', id: '46922', type: 'tv', season: 1, episode: 1, label: 'Ben 10 Omniverse S1E1' },
   { name: 'anizium', id: '37854', type: 'tv', season: 1, episode: 1, label: 'One Piece S1E1' },
-  { name: 'anizium', id: '37854', type: 'tv', season: 21, episode: 1, label: 'One Piece S21E1' },
+  { name: 'anizium', id: '37854', type: 'tv', season: 23, episode: 1173, label: 'One Piece S23E1173' },
   { name: 'anizium', id: '46260', type: 'tv', season: 1, episode: 1, label: 'Naruto S1E1' }
 ];
 
@@ -144,25 +144,25 @@ async function main() {
 
   if (!only) {
     const ep1 = await run({ name: 'anizium', id: '37854', type: 'tv', season: 1, episode: 1 });
-    const ep892 = await run({ name: 'anizium', id: '37854', type: 'tv', season: 21, episode: 1 });
+    const ep1173 = await run({ name: 'anizium', id: '37854', type: 'tv', season: 23, episode: 1173 });
     const url1 = ep1.streams && ep1.streams[0] && ep1.streams[0].url;
-    const url892 = ep892.streams && ep892.streams[0] && ep892.streams[0].url;
-    if (!url1 || !url892 || url1 === url892) {
+    const url1173 = ep1173.streams && ep1173.streams[0] && ep1173.streams[0].url;
+    if (!url1 || !url1173 || url1 === url1173 || url1173.indexOf('1173') === -1) {
       failed++;
-      console.log('\nFAIL: Anizium One Piece S1E1 and S21E1 resolved to the same URL');
+      console.log('\nFAIL: Anizium One Piece S1E1 and S23E1173 did not map to different episodes');
     } else {
-      console.log('\nPASS: Anizium One Piece absolute mapping differs (S1E1 vs S21E1)');
+      console.log('\nPASS: Anizium One Piece S23E1173 maps to episode 1173');
     }
 
     const cz1 = await run({ name: 'cizgimax', id: '37854', type: 'tv', season: 1, episode: 1 });
-    const cz892 = await run({ name: 'cizgimax', id: '37854', type: 'tv', season: 21, episode: 1 });
+    const cz1173 = await run({ name: 'cizgimax', id: '37854', type: 'tv', season: 23, episode: 1173 });
     const czUrl1 = cz1.streams && cz1.streams[0] && cz1.streams[0].url;
-    const czUrl892 = cz892.streams && cz892.streams[0] && cz892.streams[0].url;
-    if (!czUrl1 || !czUrl892 || czUrl1 === czUrl892) {
+    const czUrl1173 = cz1173.streams && cz1173.streams[0] && cz1173.streams[0].url;
+    if (!czUrl1 || !czUrl1173 || czUrl1 === czUrl1173) {
       failed++;
-      console.log('FAIL: ÇizgiMax One Piece S1E1 and S21E1 resolved to the same URL');
+      console.log('FAIL: ÇizgiMax One Piece S1E1 and S23E1173 did not map to different episodes');
     } else {
-      console.log('PASS: ÇizgiMax One Piece absolute mapping differs (S1E1 vs S21E1)');
+      console.log('PASS: ÇizgiMax One Piece S23E1173 maps to a different episode than S1E1');
     }
   }
 

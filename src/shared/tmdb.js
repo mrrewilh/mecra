@@ -76,6 +76,27 @@ async function resolveTmdbInfo(id, mediaType) {
 
 async function absoluteEpisode(tmdbId, season, episode) {
   if (season == null || episode == null) return episode;
+  var target = Number(episode);
+
+  // Some TMDB seasons (One Piece S20+) store absolute episode numbers instead
+  // of 1-based numbers. If the requested episode is in the season and the
+  // season does not start at 1, the number is already absolute.
+  var seasonData = await http.fetchJson(
+    api('/tv/' + tmdbId + '/season/' + season, { language: 'en-US' })
+  );
+  var seasonEpisodes = (seasonData && seasonData.episodes) || [];
+  if (seasonEpisodes.length) {
+    var first = Number(seasonEpisodes[0].episode_number);
+    var hasTarget = false;
+    for (var s = 0; s < seasonEpisodes.length; s++) {
+      if (Number(seasonEpisodes[s].episode_number) === target) {
+        hasTarget = true;
+        break;
+      }
+    }
+    if (hasTarget && first > 1) return target;
+  }
+
   var data = await http.fetchJson(api('/tv/' + tmdbId, { language: 'en-US' }));
   var seasons = (data && data.seasons) || [];
   var total = 0;
@@ -85,7 +106,7 @@ async function absoluteEpisode(tmdbId, season, episode) {
       total += seasons[i].episode_count || 0;
     }
   }
-  return total + Number(episode);
+  return total + target;
 }
 
 module.exports = {

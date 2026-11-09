@@ -17,8 +17,8 @@ Own plugin, not an Anthology fork. Plugin-only; sports deferred.
 - Audio: label "Dual" only when the HLS master has `#EXT-X-MEDIA:TYPE=AUDIO` or
   the file has multiple audio streams. Never merge separate dub/sub URLs.
 - Anime: map TMDB S/E to absolute episodes and match exact title + type first.
-  One Piece is flat (Anizium 1×1180, ÇizgiMax 1×N), so S21E1 must become episode
-  892, not season 21.
+  TMDB One Piece S20+ already stores absolute episode numbers (S23E1173 = 1173);
+  older seasons are 1-based. Anizium/ÇizgiMax store it as one flat season.
 - Build `src/<provider>/index.js` → `providers/<name>.js` with esbuild (CJS).
   Nuvio loads the bundle; commit it.
 - Anthology is GPL-3.0 despite its `package.json` saying MIT. Reference only.

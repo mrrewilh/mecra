@@ -312,7 +312,8 @@ async function getStreams(id, mediaType, season, episode) {
         var headers = http.headers({ Referer: SITE + '/' });
         streams.push({
           name: 'Anizium',
-          title: 'Anizium - ' + info2.tag + ' (' + label + ')',
+          title:
+            'Anizium - Bölüm ' + result.target.episode + ' - ' + info2.tag + ' (' + label + ')',
           url: item.link,
           quality: label,
           format: item.type || 'mp4',

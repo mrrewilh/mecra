@@ -200,6 +200,22 @@ var require_tmdb = __commonJS({
     function absoluteEpisode(tmdbId, season, episode) {
       return __async(this, null, function* () {
         if (season == null || episode == null) return episode;
+        var target = Number(episode);
+        var seasonData = yield http2.fetchJson(
+          api("/tv/" + tmdbId + "/season/" + season, { language: "en-US" })
+        );
+        var seasonEpisodes = seasonData && seasonData.episodes || [];
+        if (seasonEpisodes.length) {
+          var first = Number(seasonEpisodes[0].episode_number);
+          var hasTarget = false;
+          for (var s = 0; s < seasonEpisodes.length; s++) {
+            if (Number(seasonEpisodes[s].episode_number) === target) {
+              hasTarget = true;
+              break;
+            }
+          }
+          if (hasTarget && first > 1) return target;
+        }
         var data = yield http2.fetchJson(api("/tv/" + tmdbId, { language: "en-US" }));
         var seasons = data && data.seasons || [];
         var total = 0;
@@ -209,7 +225,7 @@ var require_tmdb = __commonJS({
             total += seasons[i].episode_count || 0;
           }
         }
-        return total + Number(episode);
+        return total + target;
       });
     }
     module2.exports = {
@@ -715,6 +731,10 @@ function getStreams(id, mediaType, season, episode) {
         }
       }
       if (!streams.length) return [];
+      var epNumber = found.absolute || episode;
+      for (var s = 0; s < streams.length; s++) {
+        streams[s].title = "\xC7izgiMax - B\xF6l\xFCm " + epNumber + " - " + streams[s].title.replace(/^ÇizgiMax - /, "");
+      }
       console.log(
         "[CizgiMax] " + show.title + " S" + season + "E" + episode + " -> " + streams.length + " stream(s)"
       );

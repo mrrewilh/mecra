@@ -380,6 +380,13 @@ async function getStreams(id, mediaType, season, episode) {
     }
     if (!streams.length) return [];
 
+    var epNumber = found.absolute || episode;
+    for (var s = 0; s < streams.length; s++) {
+      streams[s].title =
+        'ÇizgiMax - Bölüm ' + epNumber + ' - ' +
+        streams[s].title.replace(/^ÇizgiMax - /, '');
+    }
+
     console.log(
       '[CizgiMax] ' + show.title + ' S' + season + 'E' + episode +
       ' -> ' + streams.length + ' stream(s)'
