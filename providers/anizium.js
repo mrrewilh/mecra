@@ -1,4 +1,4 @@
-/** Mecra provider: anizium | v0.1.2 */
+/** Mecra provider: anizium | v0.1.3 */
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __commonJS = (cb, mod) => function __require() {
   try {
@@ -144,8 +144,36 @@ var require_tmdb = __commonJS({
     }
     function details(id, type) {
       return __async(this, null, function* () {
-        return http2.fetchJson(api("/" + type + "/" + id, { language: "tr-TR" }));
+        return http2.fetchJson(
+          api("/" + type + "/" + id, {
+            language: "tr-TR",
+            append_to_response: "alternative_titles"
+          })
+        );
       });
+    }
+    function alternativeTitles(data) {
+      var alt = data && data.alternative_titles || {};
+      var list = alt.results || alt.titles || [];
+      var out = [];
+      var seen = {};
+      for (var i = 0; i < list.length; i++) {
+        var title = String(list[i] && list[i].title || "").trim();
+        if (!title || seen[title]) continue;
+        seen[title] = true;
+        out.push({
+          title,
+          country: String(list[i] && list[i].iso_3166_1 || "").toUpperCase()
+        });
+      }
+      return out;
+    }
+    function englishTitleFrom(data) {
+      var list = alternativeTitles(data);
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].country === "US" || list[i].country === "GB") return list[i].title;
+      }
+      return "";
     }
     function resolveTmdbInfo(id, mediaType) {
       return __async(this, null, function* () {
@@ -177,12 +205,12 @@ var require_tmdb = __commonJS({
             title: "",
             originalTitle: "",
             englishTitle: "",
+            alternativeTitles: [],
             year: "",
             imdbId: raw.indexOf("tt") === 0 ? raw : "",
             seasons: []
           };
         }
-        var english = yield http2.fetchJson(api("/" + type + "/" + data.id, { language: "en-US" }));
         var date = data.release_date || data.first_air_date || "";
         return {
           id: data.id,
@@ -190,33 +218,37 @@ var require_tmdb = __commonJS({
           isTv: tv,
           title: data.title || data.name || "",
           originalTitle: data.original_title || data.original_name || "",
-          englishTitle: english ? english.title || english.name || "" : "",
+          englishTitle: englishTitleFrom(data),
+          alternativeTitles: alternativeTitles(data),
           year: date ? String(date).split("-")[0] : "",
           imdbId: data.imdb_id || (raw.indexOf("tt") === 0 ? raw : ""),
           seasons: data.seasons || []
         };
       });
     }
-    function absoluteEpisode(tmdbId, season, episode) {
+    function absoluteEpisode(tmdbId, season, episode, seasons) {
       return __async(this, null, function* () {
         if (season == null || episode == null) return episode;
         var target = Number(episode);
         var seasonNumber = Number(season);
-        var data = yield http2.fetchJson(api("/tv/" + tmdbId, { language: "en-US" }));
-        var seasons = data && data.seasons || [];
+        var list = seasons;
+        if (!list || !list.length) {
+          var data = yield http2.fetchJson(api("/tv/" + tmdbId, { language: "en-US" }));
+          list = data && data.seasons || [];
+        }
         var seasonInfo = null;
-        for (var s = 0; s < seasons.length; s++) {
-          if (Number(seasons[s].season_number) === seasonNumber) {
-            seasonInfo = seasons[s];
+        for (var s = 0; s < list.length; s++) {
+          if (Number(list[s].season_number) === seasonNumber) {
+            seasonInfo = list[s];
             break;
           }
         }
         if (seasonInfo && target > (seasonInfo.episode_count || 0)) return target;
         var total = 0;
-        for (var i = 0; i < seasons.length; i++) {
-          var number = seasons[i].season_number;
+        for (var i = 0; i < list.length; i++) {
+          var number = list[i].season_number;
           if (number > 0 && number < seasonNumber) {
-            total += seasons[i].episode_count || 0;
+            total += list[i].episode_count || 0;
           }
         }
         return total + target;
@@ -431,14 +463,9 @@ function tmdbQueries(info) {
     add(info.title);
     add(info.originalTitle);
     add(info.englishTitle);
-    if (info.id) {
-      var type = info.isTv ? "tv" : "movie";
-      var url = "https://api.themoviedb.org/3/" + type + "/" + info.id + "/alternative_titles?api_key=" + encodeURIComponent(config.tmdbKey()) + "&language=tr-TR";
-      var alt = yield http.fetchJson(url);
-      var list = alt && (alt.titles || alt.results) || [];
-      for (var i = 0; i < Math.min(list.length, 8); i++) {
-        add(list[i].title);
-      }
+    var list = info.alternativeTitles || [];
+    for (var i = 0; i < Math.min(list.length, 8); i++) {
+      add(list[i].title);
     }
     return queries;
   });
@@ -505,7 +532,7 @@ function mapAbsolute(seasons, absolute) {
   }
   return null;
 }
-function resolveEpisode(aniziumId, season, episode, tmdbId) {
+function resolveEpisode(aniziumId, season, episode, tmdbId, tmdbSeasons) {
   return __async(this, null, function* () {
     var detail = yield aniziumFetch("/anime/get", { id: aniziumId });
     var data = detail && detail.success ? detail.data : null;
@@ -522,7 +549,7 @@ function resolveEpisode(aniziumId, season, episode, tmdbId) {
         }
       }
     }
-    var absolute = season == null ? e : yield tmdb.absoluteEpisode(tmdbId, season, episode);
+    var absolute = season == null ? e : yield tmdb.absoluteEpisode(tmdbId, season, episode, tmdbSeasons);
     var mapped = mapAbsolute(seasons, absolute);
     if (mapped) return mapped;
     return { season: seasons[0].number || 1, episode: absolute };
@@ -535,19 +562,62 @@ function groupInfo(group) {
   if (id === "endub") return { tag: "\u0130ngilizce Dublaj", language: "en" };
   return { tag: group.name || "Japonca", language: "ja" };
 }
-function sourceData(aniziumId, isSeries, season, episode, tmdbId) {
+function sourceData(aniziumId, isSeries, season, episode, tmdbId, tmdbSeasons) {
   return __async(this, null, function* () {
-    var target = { season: 1, episode: Number(episode) || 1 };
-    if (isSeries) {
-      target = yield resolveEpisode(aniziumId, season, episode, tmdbId);
+    if (!isSeries) {
+      var movie = yield aniziumFetch("/anime/source", {
+        id: aniziumId,
+        site: "main",
+        server: "1"
+      });
+      return { data: movie, target: { season: 1, episode: Number(episode) || 1 } };
     }
-    var params = { id: aniziumId, site: "main", server: "1" };
-    if (isSeries) {
-      params.season = target.season;
-      params.episode = target.episode;
+    var s = season == null ? 1 : Number(season);
+    var e = Number(episode) || 1;
+    var direct = yield aniziumFetch("/anime/source", {
+      id: aniziumId,
+      site: "main",
+      server: "1",
+      season: s,
+      episode: e
+    });
+    if (direct && direct.success && Array.isArray(direct.groups) && direct.groups.length) {
+      return { data: direct, target: { season: s, episode: e } };
     }
-    var data = yield aniziumFetch("/anime/source", params);
-    return { data, target };
+    var absolute = season == null ? e : yield tmdb.absoluteEpisode(tmdbId, season, episode, tmdbSeasons);
+    if (absolute && (absolute !== e || s !== 1)) {
+      var flat = yield aniziumFetch("/anime/source", {
+        id: aniziumId,
+        site: "main",
+        server: "1",
+        season: 1,
+        episode: absolute
+      });
+      if (flat && flat.success && Array.isArray(flat.groups) && flat.groups.length) {
+        return { data: flat, target: { season: 1, episode: absolute } };
+      }
+    }
+    if (s !== 1) {
+      var raw = yield aniziumFetch("/anime/source", {
+        id: aniziumId,
+        site: "main",
+        server: "1",
+        season: 1,
+        episode: e
+      });
+      if (raw && raw.success && Array.isArray(raw.groups) && raw.groups.length) {
+        return { data: raw, target: { season: 1, episode: e } };
+      }
+    }
+    var target = yield resolveEpisode(aniziumId, season, episode, tmdbId, tmdbSeasons);
+    var mapped = yield aniziumFetch("/anime/source", {
+      id: aniziumId,
+      site: "main",
+      server: "1",
+      season: target.season,
+      episode: target.episode
+    });
+    return { data: mapped, target };
   });
 }
 function getStreams(id, mediaType, season, episode) {
@@ -582,7 +652,14 @@ function getStreams(id, mediaType, season, episode) {
         isSeries = matched.type !== "movie";
       }
       if (!aniziumId) return [];
-      var result = yield sourceData(aniziumId, isSeries, directSeason, directEpisode, tmdbId);
+      var result = yield sourceData(
+        aniziumId,
+        isSeries,
+        directSeason,
+        directEpisode,
+        tmdbId,
+        info ? info.seasons : null
+      );
       var data = result.data;
       if (!data || !data.success || !Array.isArray(data.groups) || !data.groups.length) return [];
       var subtitles = formatSubtitles(data.subtitles);
@@ -655,7 +732,14 @@ function getSubtitles(id, mediaType, season, episode) {
         isSeries = matched.type !== "movie";
       }
       if (!aniziumId) return { subtitles: [] };
-      var result = yield sourceData(aniziumId, isSeries, directSeason, directEpisode, tmdbId);
+      var result = yield sourceData(
+        aniziumId,
+        isSeries,
+        directSeason,
+        directEpisode,
+        tmdbId,
+        info ? info.seasons : null
+      );
       var data = result.data;
       if (!data || !data.subtitles) return { subtitles: [] };
       return { subtitles: formatSubtitles(data.subtitles) };

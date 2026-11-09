@@ -195,7 +195,8 @@ async function findPage(info, show, season, episode) {
   var html = await http.fetchText(page, { headers: pageHeaders({ Referer: BASE + '/' }) });
   if (html && html.indexOf('window._vs') !== -1) return page;
 
-  var absolute = season == null ? e : await tmdb.absoluteEpisode(info.id, season, episode);
+  var absolute =
+    season == null ? e : await tmdb.absoluteEpisode(info.id, season, episode, info.seasons);
   if (absolute && absolute !== e) {
     var fallback = BASE + '/dizi/' + show.slug + '/sezon-1/bolum-' + absolute;
     var fallbackHtml = await http.fetchText(fallback, {

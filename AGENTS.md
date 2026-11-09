@@ -19,6 +19,8 @@ Own plugin, not an Anthology fork. Plugin-only; sports deferred.
 - Anime: map TMDB S/E to absolute episodes and match exact title + type first.
   TMDB One Piece S20+ already stores absolute episode numbers (S23E1173 = 1173);
   older seasons are 1-based. Anizium/ÇizgiMax store it as one flat season.
+- Anizium: never call `/anime/get` just to resolve a stream (One Piece is ~959 KB,
+  near Nuvio's 1 MB cap). Try `/anime/source`, then season 1 + absolute, then get.
 - Build `src/<provider>/index.js` → `providers/<name>.js` with esbuild (CJS).
   Nuvio loads the bundle; commit it.
 - Anthology is GPL-3.0 despite its `package.json` saying MIT. Reference only.

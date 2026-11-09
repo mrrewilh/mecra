@@ -32,6 +32,13 @@ node scripts/test-providers.js anizium   # one provider
 HDFilmCehennemi movie + TV, LiderFilm movie + TV, DiziYou, YabancıDizi,
 ÇizgiMax One Piece + Naruto + Miraculous + Ben 10, Anizium One Piece + Naruto.
 
+## Anizium request budget
+
+- Normal anime: TMDB details (with alternative titles) → Anizium search → source.
+- One Piece S23E1173: same, then a season-1 source fallback. 4 requests, no
+  `/anime/get` (that payload is ~959 KB).
+- `getMeta` still reads `/anime/get` because it needs the episode list.
+
 ## QuickJS smoke check
 
 The bundles also evaluate in `quickjs-emscripten` and expose `getStreams`.

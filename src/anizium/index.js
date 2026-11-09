@@ -118,21 +118,9 @@ async function tmdbQueries(info) {
   add(info.originalTitle);
   add(info.englishTitle);
 
-  if (info.id) {
-    var type = info.isTv ? 'tv' : 'movie';
-    var url =
-      'https://api.themoviedb.org/3/' +
-      type +
-      '/' +
-      info.id +
-      '/alternative_titles?api_key=' +
-      encodeURIComponent(config.tmdbKey()) +
-      '&language=tr-TR';
-    var alt = await http.fetchJson(url);
-    var list = (alt && (alt.titles || alt.results)) || [];
-    for (var i = 0; i < Math.min(list.length, 8); i++) {
-      add(list[i].title);
-    }
+  var list = info.alternativeTitles || [];
+  for (var i = 0; i < Math.min(list.length, 8); i++) {
+    add(list[i].title);
   }
 
   return queries;
@@ -204,7 +192,7 @@ function mapAbsolute(seasons, absolute) {
   return null;
 }
 
-async function resolveEpisode(aniziumId, season, episode, tmdbId) {
+async function resolveEpisode(aniziumId, season, episode, tmdbId, tmdbSeasons) {
   var detail = await aniziumFetch('/anime/get', { id: aniziumId });
   var data = detail && detail.success ? detail.data : null;
   var seasons = (data && data.seasons) || [];
@@ -223,7 +211,8 @@ async function resolveEpisode(aniziumId, season, episode, tmdbId) {
     }
   }
 
-  var absolute = season == null ? e : await tmdb.absoluteEpisode(tmdbId, season, episode);
+  var absolute =
+    season == null ? e : await tmdb.absoluteEpisode(tmdbId, season, episode, tmdbSeasons);
   var mapped = mapAbsolute(seasons, absolute);
   if (mapped) return mapped;
   return { season: seasons[0].number || 1, episode: absolute };
@@ -237,18 +226,72 @@ function groupInfo(group) {
   return { tag: group.name || 'Japonca', language: 'ja' };
 }
 
-async function sourceData(aniziumId, isSeries, season, episode, tmdbId) {
-  var target = { season: 1, episode: Number(episode) || 1 };
-  if (isSeries) {
-    target = await resolveEpisode(aniziumId, season, episode, tmdbId);
+async function sourceData(aniziumId, isSeries, season, episode, tmdbId, tmdbSeasons) {
+  if (!isSeries) {
+    var movie = await aniziumFetch('/anime/source', {
+      id: aniziumId,
+      site: 'main',
+      server: '1'
+    });
+    return { data: movie, target: { season: 1, episode: Number(episode) || 1 } };
   }
-  var params = { id: aniziumId, site: 'main', server: '1' };
-  if (isSeries) {
-    params.season = target.season;
-    params.episode = target.episode;
+
+  var s = season == null ? 1 : Number(season);
+  var e = Number(episode) || 1;
+
+  // Fast path: the requested season/episode exists as-is. This avoids the huge
+  // /anime/get payload (One Piece is ~959 KB) for normal anime.
+  var direct = await aniziumFetch('/anime/source', {
+    id: aniziumId,
+    site: 'main',
+    server: '1',
+    season: s,
+    episode: e
+  });
+  if (direct && direct.success && Array.isArray(direct.groups) && direct.groups.length) {
+    return { data: direct, target: { season: s, episode: e } };
   }
-  var data = await aniziumFetch('/anime/source', params);
-  return { data: data, target: target };
+
+  // Flat-season fallback (One Piece S20+ and similar): try the absolute episode
+  // in season 1 before downloading the full episode list.
+  var absolute =
+    season == null ? e : await tmdb.absoluteEpisode(tmdbId, season, episode, tmdbSeasons);
+  if (absolute && (absolute !== e || s !== 1)) {
+    var flat = await aniziumFetch('/anime/source', {
+      id: aniziumId,
+      site: 'main',
+      server: '1',
+      season: 1,
+      episode: absolute
+    });
+    if (flat && flat.success && Array.isArray(flat.groups) && flat.groups.length) {
+      return { data: flat, target: { season: 1, episode: absolute } };
+    }
+  }
+
+  if (s !== 1) {
+    var raw = await aniziumFetch('/anime/source', {
+      id: aniziumId,
+      site: 'main',
+      server: '1',
+      season: 1,
+      episode: e
+    });
+    if (raw && raw.success && Array.isArray(raw.groups) && raw.groups.length) {
+      return { data: raw, target: { season: 1, episode: e } };
+    }
+  }
+
+  // Last resort: read the full season map, then request the mapped episode.
+  var target = await resolveEpisode(aniziumId, season, episode, tmdbId, tmdbSeasons);
+  var mapped = await aniziumFetch('/anime/source', {
+    id: aniziumId,
+    site: 'main',
+    server: '1',
+    season: target.season,
+    episode: target.episode
+  });
+  return { data: mapped, target: target };
 }
 
 async function getStreams(id, mediaType, season, episode) {
@@ -285,7 +328,14 @@ async function getStreams(id, mediaType, season, episode) {
 
     if (!aniziumId) return [];
 
-    var result = await sourceData(aniziumId, isSeries, directSeason, directEpisode, tmdbId);
+    var result = await sourceData(
+      aniziumId,
+      isSeries,
+      directSeason,
+      directEpisode,
+      tmdbId,
+      info ? info.seasons : null
+    );
     var data = result.data;
     if (!data || !data.success || !Array.isArray(data.groups) || !data.groups.length) return [];
 
@@ -371,7 +421,14 @@ async function getSubtitles(id, mediaType, season, episode) {
 
     if (!aniziumId) return { subtitles: [] };
 
-    var result = await sourceData(aniziumId, isSeries, directSeason, directEpisode, tmdbId);
+    var result = await sourceData(
+      aniziumId,
+      isSeries,
+      directSeason,
+      directEpisode,
+      tmdbId,
+      info ? info.seasons : null
+    );
     var data = result.data;
     if (!data || !data.subtitles) return { subtitles: [] };
     return { subtitles: formatSubtitles(data.subtitles) };

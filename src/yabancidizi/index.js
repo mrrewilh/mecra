@@ -98,7 +98,8 @@ async function findEpisode(info, show, season, episode) {
   var exact = await episodePage(show.s_link, season, episode);
   if (exact) return exact;
 
-  var absolute = season == null ? episode : await tmdb.absoluteEpisode(info.id, season, episode);
+  var absolute =
+    season == null ? episode : await tmdb.absoluteEpisode(info.id, season, episode, info.seasons);
   if (absolute && absolute !== Number(episode)) {
     return episodePage(show.s_link, 1, absolute);
   }

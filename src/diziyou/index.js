@@ -81,7 +81,8 @@ async function findEpisode(show, info, season, episode) {
   var showHtml = await http.fetchText(show.url, { headers: pageHeaders() });
   if (!showHtml) return null;
 
-  var absolute = season == null ? e : await tmdb.absoluteEpisode(info.id, season, episode);
+  var absolute =
+    season == null ? e : await tmdb.absoluteEpisode(info.id, season, episode, info.seasons);
   var links = [];
   var re = /href="([^"]*?(\d+)-sezon-(\d+)-bolum\/?)"/gi;
   var match;

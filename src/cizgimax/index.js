@@ -149,7 +149,8 @@ async function findEpisode(info, show, season, episode) {
   var first = await tryEpisodePage(BASE + '/' + slug + '-' + s + '-sezon-' + e + '-bolum-izle/');
   if (first) return first;
 
-  var absolute = season == null ? e : await tmdb.absoluteEpisode(info.id, season, episode);
+  var absolute =
+    season == null ? e : await tmdb.absoluteEpisode(info.id, season, episode, info.seasons);
   if (absolute && absolute !== e) {
     var fallback = await tryEpisodePage(
       BASE + '/' + slug + '-1-sezon-' + absolute + '-bolum-izle/'

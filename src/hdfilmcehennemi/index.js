@@ -328,7 +328,8 @@ async function findEpisodePage(info, show, season, episode) {
 
   var s = season == null ? 1 : Number(season);
   var e = Number(episode) || 1;
-  var absolute = season == null ? e : await tmdb.absoluteEpisode(info.id, season, episode);
+  var absolute =
+    season == null ? e : await tmdb.absoluteEpisode(info.id, season, episode, info.seasons);
 
   for (var i = 0; i < links.length; i++) {
     if (links[i].season === s && links[i].episode === e) return links[i].url;

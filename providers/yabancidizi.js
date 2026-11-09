@@ -1,4 +1,4 @@
-/** Mecra provider: yabancidizi | v0.1.2 */
+/** Mecra provider: yabancidizi | v0.1.3 */
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __commonJS = (cb, mod) => function __require() {
   try {
@@ -144,8 +144,36 @@ var require_tmdb = __commonJS({
     }
     function details(id, type) {
       return __async(this, null, function* () {
-        return http2.fetchJson(api("/" + type + "/" + id, { language: "tr-TR" }));
+        return http2.fetchJson(
+          api("/" + type + "/" + id, {
+            language: "tr-TR",
+            append_to_response: "alternative_titles"
+          })
+        );
       });
+    }
+    function alternativeTitles(data) {
+      var alt = data && data.alternative_titles || {};
+      var list = alt.results || alt.titles || [];
+      var out = [];
+      var seen = {};
+      for (var i = 0; i < list.length; i++) {
+        var title = String(list[i] && list[i].title || "").trim();
+        if (!title || seen[title]) continue;
+        seen[title] = true;
+        out.push({
+          title,
+          country: String(list[i] && list[i].iso_3166_1 || "").toUpperCase()
+        });
+      }
+      return out;
+    }
+    function englishTitleFrom(data) {
+      var list = alternativeTitles(data);
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].country === "US" || list[i].country === "GB") return list[i].title;
+      }
+      return "";
     }
     function resolveTmdbInfo(id, mediaType) {
       return __async(this, null, function* () {
@@ -177,12 +205,12 @@ var require_tmdb = __commonJS({
             title: "",
             originalTitle: "",
             englishTitle: "",
+            alternativeTitles: [],
             year: "",
             imdbId: raw.indexOf("tt") === 0 ? raw : "",
             seasons: []
           };
         }
-        var english = yield http2.fetchJson(api("/" + type + "/" + data.id, { language: "en-US" }));
         var date = data.release_date || data.first_air_date || "";
         return {
           id: data.id,
@@ -190,33 +218,37 @@ var require_tmdb = __commonJS({
           isTv: tv,
           title: data.title || data.name || "",
           originalTitle: data.original_title || data.original_name || "",
-          englishTitle: english ? english.title || english.name || "" : "",
+          englishTitle: englishTitleFrom(data),
+          alternativeTitles: alternativeTitles(data),
           year: date ? String(date).split("-")[0] : "",
           imdbId: data.imdb_id || (raw.indexOf("tt") === 0 ? raw : ""),
           seasons: data.seasons || []
         };
       });
     }
-    function absoluteEpisode(tmdbId, season, episode) {
+    function absoluteEpisode(tmdbId, season, episode, seasons) {
       return __async(this, null, function* () {
         if (season == null || episode == null) return episode;
         var target = Number(episode);
         var seasonNumber = Number(season);
-        var data = yield http2.fetchJson(api("/tv/" + tmdbId, { language: "en-US" }));
-        var seasons = data && data.seasons || [];
+        var list = seasons;
+        if (!list || !list.length) {
+          var data = yield http2.fetchJson(api("/tv/" + tmdbId, { language: "en-US" }));
+          list = data && data.seasons || [];
+        }
         var seasonInfo = null;
-        for (var s = 0; s < seasons.length; s++) {
-          if (Number(seasons[s].season_number) === seasonNumber) {
-            seasonInfo = seasons[s];
+        for (var s = 0; s < list.length; s++) {
+          if (Number(list[s].season_number) === seasonNumber) {
+            seasonInfo = list[s];
             break;
           }
         }
         if (seasonInfo && target > (seasonInfo.episode_count || 0)) return target;
         var total = 0;
-        for (var i = 0; i < seasons.length; i++) {
-          var number = seasons[i].season_number;
+        for (var i = 0; i < list.length; i++) {
+          var number = list[i].season_number;
           if (number > 0 && number < seasonNumber) {
-            total += seasons[i].episode_count || 0;
+            total += list[i].episode_count || 0;
           }
         }
         return total + target;
@@ -420,7 +452,7 @@ function findEpisode(info, show, season, episode) {
   return __async(this, null, function* () {
     var exact = yield episodePage(show.s_link, season, episode);
     if (exact) return exact;
-    var absolute = season == null ? episode : yield tmdb.absoluteEpisode(info.id, season, episode);
+    var absolute = season == null ? episode : yield tmdb.absoluteEpisode(info.id, season, episode, info.seasons);
     if (absolute && absolute !== Number(episode)) {
       return episodePage(show.s_link, 1, absolute);
     }
