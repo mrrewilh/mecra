@@ -1,4 +1,4 @@
-/** Mecra provider: anizium | v0.1.4 */
+/** Mecra provider: anizium | v0.1.5 */
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __commonJS = (cb, mod) => function __require() {
   try {
@@ -464,7 +464,7 @@ function tmdbQueries(info) {
     add(info.originalTitle);
     add(info.englishTitle);
     var list = info.alternativeTitles || [];
-    for (var i = 0; i < Math.min(list.length, 8); i++) {
+    for (var i = 0; i < Math.min(list.length, 4); i++) {
       add(list[i].title);
     }
     return queries;
@@ -477,41 +477,27 @@ function typeAllowed(item, isTv) {
 }
 function searchAnizium(queries, isTv) {
   return __async(this, null, function* () {
-    var best = null;
-    var bestScore = 0;
+    var fallback = null;
     for (var i = 0; i < queries.length; i++) {
+      var query = cleanStr(queries[i]);
+      if (!query) continue;
       var data = yield aniziumFetch("/page/search", { value: queries[i], page: 1 });
       var items = data && data.page && data.page.data || [];
+      var prefix = null;
+      var contains = null;
       for (var j = 0; j < items.length; j++) {
         var item = items[j];
         if (!typeAllowed(item, isTv)) continue;
-        var score = text.score(queries[i], item.name);
-        if (score >= 100) return item;
-        if (score > bestScore) {
-          bestScore = score;
-          best = item;
-        }
+        var name = cleanStr(item.name);
+        if (name === query) return item;
+        if (!prefix && name.indexOf(query) === 0) prefix = item;
+        if (!contains && name.indexOf(query) !== -1) contains = item;
+        if (!fallback && name.indexOf(query.split(" ")[0]) !== -1) fallback = item;
       }
-      if (best) return best;
+      if (prefix) return prefix;
+      if (contains) return contains;
     }
-    if (!best && queries.length) {
-      var word = String(queries[0]).split(" ")[0];
-      if (word && word.length >= 4) {
-        var fallback = yield aniziumFetch("/page/search", { value: word, page: 1 });
-        var list = fallback && fallback.page && fallback.page.data || [];
-        for (var k = 0; k < list.length; k++) {
-          if (!typeAllowed(list[k], isTv)) continue;
-          for (var m = 0; m < queries.length; m++) {
-            var value = text.score(queries[m], list[k].name);
-            if (value > bestScore) {
-              bestScore = value;
-              best = list[k];
-            }
-          }
-        }
-      }
-    }
-    return bestScore > 0 ? best : null;
+    return fallback;
   });
 }
 function mapAbsolute(seasons, absolute) {
@@ -644,16 +630,23 @@ function getStreams(id, mediaType, season, episode) {
         aniziumId = raw.replace("anizium:anime:", "");
         isSeries = true;
       } else {
+        var t0 = Date.now();
         var info = yield tmdb.resolveTmdbInfo(raw, mediaType || "series");
+        console.log("[Anizium] tmdb " + (Date.now() - t0) + "ms");
         isSeries = info.isTv;
         tmdbId = info.id;
+        var t1 = Date.now();
         var queries = yield tmdbQueries(info);
         var matched = yield searchAnizium(queries, isSeries);
+        console.log(
+          "[Anizium] search " + (Date.now() - t1) + "ms " + (matched ? matched.name : "no match")
+        );
         if (!matched) return [];
         aniziumId = matched.ID;
         isSeries = matched.type !== "movie";
       }
       if (!aniziumId) return [];
+      var t2 = Date.now();
       var result = yield sourceData(
         aniziumId,
         isSeries,
@@ -662,6 +655,7 @@ function getStreams(id, mediaType, season, episode) {
         tmdbId,
         info ? info.seasons : null
       );
+      console.log("[Anizium] source " + (Date.now() - t2) + "ms");
       var data = result.data;
       if (!data || !data.success || !Array.isArray(data.groups) || !data.groups.length) return [];
       var subtitles = formatSubtitles(data.subtitles);

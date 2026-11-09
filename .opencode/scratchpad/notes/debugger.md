@@ -40,6 +40,16 @@ anthology/anizium           271ms     5     42.0KB   5        ok
 Anthology can be faster but wrong: for One Piece S23E1173 it returns the
 Fan Letter source (`one-piece-fan-letter`), while Mecra returns `/1173/`.
 
+Serial Experiments Lain (`1087`, S1E1) after the cleanup:
+
+```
+mecra/anizium      332ms   3 requests   6.3KB   10 streams
+anthology/anizium  369ms   5 requests   8.3KB   10 streams
+```
+
+Anizium now logs `tmdb`, `search`, and `source` timings to `Plugin:<id>`, so
+`nuvio-logcat.sh` shows which step is slow on a real device.
+
 Use `--cap` to reproduce NuvioTV's 1 MB limit. ÇizgiMax episode pages around
 1.8 MB will be truncated and return no streams; that is a real client limit, not
 a provider bug.
