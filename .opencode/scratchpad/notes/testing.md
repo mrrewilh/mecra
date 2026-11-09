@@ -32,15 +32,6 @@ node scripts/test-providers.js anizium   # one provider
 HDFilmCehennemi movie + TV, LiderFilm movie + TV, DiziYou, YabancıDizi,
 ÇizgiMax One Piece + Naruto + Miraculous + Ben 10, Anizium One Piece + Naruto.
 
-## Mux test
-
-`npm run test:mux` starts a temporary `server/` instance, asks DiziYou and
-YabancıDizi for a dual stream, and checks:
-
-- one stream with a `/mux?` URL
-- two `#EXT-X-MEDIA:TYPE=AUDIO` entries (Orijinal, Türkçe Dublaj)
-- video, audio 1, and audio 2 segment requests return 200
-
 ## QuickJS smoke check
 
 The bundles also evaluate in `quickjs-emscripten` and expose `getStreams`.

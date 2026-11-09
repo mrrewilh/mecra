@@ -1,43 +1,43 @@
 npm notice run mecra@0.1.0 pretest
 npm notice run node build.js
 building 6 provider(s)
-built anizium -> providers/anizium.js (25.7 KB)
-built cizgimax -> providers/cizgimax.js (24.4 KB)
-built diziyou -> providers/diziyou.js (17.7 KB)
-built hdfilmcehennemi -> providers/hdfilmcehennemi.js (24.7 KB)
-built liderfilmizle -> providers/liderfilmizle.js (19.6 KB)
-built yabancidizi -> providers/yabancidizi.js (17.0 KB)
+built anizium -> providers/anizium.js (25.3 KB)
+built cizgimax -> providers/cizgimax.js (24.0 KB)
+built diziyou -> providers/diziyou.js (16.5 KB)
+built hdfilmcehennemi -> providers/hdfilmcehennemi.js (24.4 KB)
+built liderfilmizle -> providers/liderfilmizle.js (19.3 KB)
+built yabancidizi -> providers/yabancidizi.js (15.5 KB)
 done: 6/6
 npm notice run mecra@0.1.0 test
 npm notice run node scripts/test-providers.js
 [HDFilmCehennemi] oppenheimer-4 -> HDFilmCehennemi - Dual [Turkish / Original Audio] (1080p)
 
 === hdfilmcehennemi | Oppenheimer ===
-PASS: 1 stream(s) in 1621 ms | probe=200 application/vnd.apple.mpegurl
+PASS: 1 stream(s) in 866 ms | probe=200 application/vnd.apple.mpegurl
   [1] HDFilmCehennemi - Dual [Turkish / Original Audio] (1080p) | quality=1080p | subs=6
-      https://srv12.cdnimages732.cyou/hls/oppenheimer-2023-bluray-trdualmp4-RnM64yuM42u.mp4/txt/master.txt
+      https://srv12.cdnimages1878.cyou/hls/oppenheimer-2023-bluray-trdualmp4-RnM64yuM42u.mp4/txt/master.txt
 [HDFilmCehennemi] Stranger Things S1E1 -> HDFilmCehennemi - Dual [Turkish / Original Audio] (1080p)
 
 === hdfilmcehennemi | Stranger Things S1E1 ===
-PASS: 1 stream(s) in 879 ms | probe=200 application/vnd.apple.mpegurl
+PASS: 1 stream(s) in 645 ms | probe=200 application/vnd.apple.mpegurl
   [1] HDFilmCehennemi - Dual [Turkish / Original Audio] (1080p) | quality=1080p | subs=5
-      https://srv12.cdnimages2434.shop/hls/strangerthings-s01e01-dual-7c45x8vyq354mp4-Bd5Otk48Hdr.mp4/txt/master.txt
+      https://srv12.cdnimages1755.shop/hls/strangerthings-s01e01-dual-7c45x8vyq354mp4-Bd5Otk48Hdr.mp4/txt/master.txt
 [LiderFilm] Oppenheimer movie -> 1
 
 === liderfilmizle | Oppenheimer ===
-PASS: 1 stream(s) in 9993 ms | probe=200 application/vnd.apple.mpegurl
+PASS: 1 stream(s) in 2712 ms | probe=200 application/vnd.apple.mpegurl
   [1] LiderFilm - Dual [English / Türkçe] (1080p) | quality=1080p | subs=0
       https://p2km.uk-traffic-076.com/hls2/01/00020/c73je4ekqgqu_n/master.m3u8
 [LiderFilm] Breaking Bad S1E1 -> 1
 
 === liderfilmizle | Breaking Bad S1E1 ===
-PASS: 1 stream(s) in 3378 ms | probe=200 application/vnd.apple.mpegurl
+PASS: 1 stream(s) in 1953 ms | probe=200 application/vnd.apple.mpegurl
   [1] LiderFilm - Dual [English / Türkçe] (1080p) | quality=1080p | subs=0
       https://pa2s.uk-traffic-076.com/hls2/02/00006/ng8w9g7axg39_n/master.m3u8
 [DiziYou] Breaking Bad S1E1
 
 === diziyou | Breaking Bad S1E1 ===
-PASS: 2 stream(s) in 1412 ms | probe=200 application/vnd.apple.mpegurl
+PASS: 2 stream(s) in 1230 ms | probe=200 application/vnd.apple.mpegurl
   [1] DiziYou - Türkçe Altyazılı (1080p) | quality=1080p | subs=1
       https://storage.diziyou.one/episodes/10551/play.m3u8
   [2] DiziYou - Türkçe Dublaj (1080p) | quality=1080p | subs=1
@@ -45,13 +45,13 @@ PASS: 2 stream(s) in 1412 ms | probe=200 application/vnd.apple.mpegurl
 [YabanciDizi] House M.D. S1E1 -> 1
 
 === yabancidizi | House M.D. S1E1 ===
-PASS: 1 stream(s) in 1496 ms | probe=200 application/vnd.apple.mpegurl
+PASS: 1 stream(s) in 1385 ms | probe=200 application/vnd.apple.mpegurl
   [1] YabancıDizi - Türkçe Altyazılı (1080p) | quality=1080p | subs=0
-      https://prx-1566-ant-r.vmpx.online/hls2/03/00172/dq2cdierpkpw_,n,l,.urlset/master.m3u8
+      https://prx-1357-ant-v.vmget.online/hls2/03/00172/dq2cdierpkpw_,n,l,.urlset/master.m3u8
 [CizgiMax] One Piece S1E1 -> 3 stream(s)
 
 === cizgimax | One Piece S1E1 ===
-PASS: 3 stream(s) in 2273 ms | probe=206 video/mp4
+PASS: 3 stream(s) in 1401 ms | probe=206 video/mp4
   [1] ÇizgiMax - Türkçe (1080p) | quality=1080p | subs=0
       https://merten-2.cfd/file/tau-video/66_1_1_1080p.mp4
   [2] ÇizgiMax - Türkçe (720p) | quality=720p | subs=0
@@ -61,7 +61,7 @@ PASS: 3 stream(s) in 2273 ms | probe=206 video/mp4
 [CizgiMax] One Piece S21E1 -> 2 stream(s)
 
 === cizgimax | One Piece S21E1 ===
-PASS: 2 stream(s) in 9189 ms | probe=206 video/mp4
+PASS: 2 stream(s) in 1899 ms | probe=206 video/mp4
   [1] ÇizgiMax - Türkçe (720p) | quality=720p | subs=0
       https://alfreda-1.cfd/file/tau-video/66_1_892_720p.mp4
   [2] ÇizgiMax - Türkçe (480p) | quality=480p | subs=0
@@ -69,7 +69,7 @@ PASS: 2 stream(s) in 9189 ms | probe=206 video/mp4
 [CizgiMax] Naruto Shippuden S1E1 -> 2 stream(s)
 
 === cizgimax | Naruto S1E1 ===
-PASS: 2 stream(s) in 8129 ms | probe=200 application/x-mpegURL
+PASS: 2 stream(s) in 2064 ms | probe=200 application/x-mpegURL
   [1] ÇizgiMax - Dublaj - Dzen (HLS) | quality=auto | subs=0
       https://vd616.okcdn.ru/video.m3u8
   [2] ÇizgiMax - Türkçe (480p) | quality=480p | subs=0
@@ -77,51 +77,51 @@ PASS: 2 stream(s) in 8129 ms | probe=200 application/x-mpegURL
 [CizgiMax] Mucize Uğur Böceği ile Kara Kedi S6E26 -> 1 stream(s)
 
 === cizgimax | Miraculous S6E26 ===
-PASS: 1 stream(s) in 21673 ms | probe=200 application/vnd.apple.mpegurl
+PASS: 1 stream(s) in 1229 ms | probe=200 application/vnd.apple.mpegurl
   [1] ÇizgiMax - 1080p (HLS) | quality=auto | subs=0
       https://cizgimax.online/api/stream/mrc/
 [CizgiMax] Ben 10 Omniverse S1E1 -> 1 stream(s)
 
 === cizgimax | Ben 10 Omniverse S1E1 ===
-PASS: 1 stream(s) in 2803 ms | probe=200 application/x-mpegURL
+PASS: 1 stream(s) in 2071 ms | probe=200 application/x-mpegURL
   [1] ÇizgiMax - Dublaj - Dzen (HLS) | quality=auto | subs=0
       https://vd595.okcdn.ru/video.m3u8
 [Anizium] id=745549414 S1E1 -> 5 stream(s)
 
 === anizium | One Piece S1E1 ===
-PASS: 5 stream(s) in 2674 ms | probe=206 video/mp4
+PASS: 5 stream(s) in 1361 ms | probe=206 video/mp4
   [1] Anizium - Japonca [TR Altyazılı] (4K UHD) | quality=4K UHD | subs=4
       https://f.aniziumserver.site/37854/1/1/2160p.original.mp4
   [2] Anizium - Japonca [TR Altyazılı] (2K QHD) | quality=2K QHD | subs=4
-      https://f.aniziumserver.sbs/37854/1/1/1440p.original.mp4
+      https://f.aniziumserver.site/37854/1/1/1440p.original.mp4
   [3] Anizium - Japonca [TR Altyazılı] (1080p) | quality=1080p | subs=4
       https://f.aniziumserver.site/37854/1/1/1080p.original.mp4
   [4] Anizium - Japonca [TR Altyazılı] (720p) | quality=720p | subs=4
-      https://f.aniziumserver.sbs/37854/1/1/720p.original.mp4
+      https://f.aniziumserver.site/37854/1/1/720p.original.mp4
 [Anizium] id=745549414 S1E892 -> 5 stream(s)
 
 === anizium | One Piece S21E1 ===
-PASS: 5 stream(s) in 1225 ms | probe=206 video/mp4
+PASS: 5 stream(s) in 842 ms | probe=206 video/mp4
   [1] Anizium - Japonca [TR Altyazılı] (4K UHD) | quality=4K UHD | subs=6
       https://f.aniziumserver.sbs/37854/1/892/2160p.original.mp4
   [2] Anizium - Japonca [TR Altyazılı] (2K QHD) | quality=2K QHD | subs=6
-      https://f.aniziumserver.site/37854/1/892/1440p.original.mp4
+      https://f.aniziumserver.sbs/37854/1/892/1440p.original.mp4
   [3] Anizium - Japonca [TR Altyazılı] (1080p) | quality=1080p | subs=6
-      https://f.aniziumserver.sbs/37854/1/892/1080p.original.mp4
+      https://f.aniziumserver.site/37854/1/892/1080p.original.mp4
   [4] Anizium - Japonca [TR Altyazılı] (720p) | quality=720p | subs=6
-      https://f.aniziumserver.sbs/37854/1/892/720p.original.mp4
+      https://f.aniziumserver.site/37854/1/892/720p.original.mp4
 [Anizium] id=921466367 S1E1 -> 5 stream(s)
 
 === anizium | Naruto S1E1 ===
-PASS: 5 stream(s) in 997 ms | probe=206 video/mp4
+PASS: 5 stream(s) in 676 ms | probe=206 video/mp4
   [1] Anizium - Japonca [TR Altyazılı] (4K UHD) | quality=4K UHD | subs=6
       https://r.aniziumserver.site/46260/1/1/2160p.original.mp4
   [2] Anizium - Japonca [TR Altyazılı] (2K QHD) | quality=2K QHD | subs=6
-      https://r.aniziumserver.sbs/46260/1/1/1440p.original.mp4
+      https://r.aniziumserver.site/46260/1/1/1440p.original.mp4
   [3] Anizium - Japonca [TR Altyazılı] (1080p) | quality=1080p | subs=6
       https://r.aniziumserver.site/46260/1/1/1080p.original.mp4
   [4] Anizium - Japonca [TR Altyazılı] (720p) | quality=720p | subs=6
-      https://r.aniziumserver.site/46260/1/1/720p.original.mp4
+      https://r.aniziumserver.sbs/46260/1/1/720p.original.mp4
 [Anizium] id=745549414 S1E1 -> 5 stream(s)
 [Anizium] id=745549414 S1E892 -> 5 stream(s)
 

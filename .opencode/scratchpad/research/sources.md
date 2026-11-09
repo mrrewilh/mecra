@@ -24,8 +24,7 @@ truncates this page, that episode returns no streams. Smaller cartoon pages
 - Nuvio switches audio tracks embedded in one file/HLS master only.
 - Label "Dual" only when the master has `#EXT-X-MEDIA:TYPE=AUDIO` (2+ entries) or
   the file has multiple audio streams.
-- Separate dub/sub files → separate clearly labelled rows, unless `MUX_BASE` points
-  at `server/`. The mux server returns one HLS master with both audio tracks.
+- Separate dub/sub files → separate clearly labelled rows. No merge/proxy.
 
 ## Licensing
 

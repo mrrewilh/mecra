@@ -45,20 +45,9 @@ var require_config = __commonJS({
       }
       return "";
     }
-    function globalValue(name) {
-      try {
-        return typeof globalThis !== "undefined" && globalThis[name] ? String(globalThis[name]) : "";
-      } catch (e) {
-        return "";
-      }
-    }
-    var MUX_BASE = "";
-    var MUX_TOKEN = "";
     module2.exports = {
       ua: UA,
       tmdbKey,
-      muxBase: MUX_BASE || globalValue("MECRA_MUX_BASE"),
-      muxToken: MUX_TOKEN || globalValue("MECRA_MUX_TOKEN"),
       sites: {
         hdfilmcehennemi: "https://www.hdfilmcehennemi.nl",
         hdfilmcehennemiEmbed: "https://hdfilmcehennemi.mobi",
@@ -446,27 +435,6 @@ function buildStreams(info, html, episodeUrl) {
   var streams = [];
   var hasSub = html.indexOf("turkceAltyazili") !== -1;
   var hasDub = html.indexOf("turkceDublaj") !== -1;
-  var subUrl = STORAGE + "/episodes/" + itemId + "/play.m3u8";
-  var dubUrl = STORAGE + "/episodes/" + itemId + "_tr/play.m3u8";
-  if (config.muxBase && hasSub && hasDub) {
-    var mux = config.muxBase.replace(/\/+$/, "") + "/mux?video=" + encodeURIComponent(subUrl) + "&audio=" + encodeURIComponent(dubUrl) + "&referer=" + encodeURIComponent(BASE + "/");
-    if (config.muxToken) mux += "&token=" + encodeURIComponent(config.muxToken);
-    return [
-      {
-        name: "DiziYou",
-        title: "DiziYou - Dual [Orijinal / T\xFCrk\xE7e Dublaj] (1080p)",
-        url: mux,
-        quality: "1080p",
-        format: "hls",
-        isHls: true,
-        language: "tr",
-        provider: "diziyou",
-        headers: {},
-        behaviorHints: {},
-        subtitles: subs
-      }
-    ];
-  }
   if (hasSub) {
     streams.push({
       name: "DiziYou",

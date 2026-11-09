@@ -13,24 +13,9 @@ function tmdbKey() {
   return '';
 }
 
-function globalValue(name) {
-  try {
-    return typeof globalThis !== 'undefined' && globalThis[name] ? String(globalThis[name]) : '';
-  } catch (e) {
-    return '';
-  }
-}
-
-// Set these to your mux server. Leave MUX_BASE empty to keep separate dub/sub rows.
-// Example: MUX_BASE = 'https://mux.example.com';
-var MUX_BASE = '';
-var MUX_TOKEN = '';
-
 module.exports = {
   ua: UA,
   tmdbKey: tmdbKey,
-  muxBase: MUX_BASE || globalValue('MECRA_MUX_BASE'),
-  muxToken: MUX_TOKEN || globalValue('MECRA_MUX_TOKEN'),
   sites: {
     hdfilmcehennemi: 'https://www.hdfilmcehennemi.nl',
     hdfilmcehennemiEmbed: 'https://hdfilmcehennemi.mobi',

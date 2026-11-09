@@ -125,16 +125,13 @@ async function getStreams(id, mediaType, season, episode) {
 
     var items = extractVidmoly(html);
     var streams = [];
-    var subStream = null;
-    var dubStream = null;
     for (var i = 0; i < items.length; i++) {
       var url = await resolveVidmoly(items[i].id);
       if (!url) continue;
       var headers = http.headers({ Referer: 'https://vidmoly.biz/' });
-      var label = labelFor(items[i].label);
-      var stream = {
+      streams.push({
         name: 'YabancıDizi',
-        title: 'YabancıDizi - ' + label + ' (1080p)',
+        title: 'YabancıDizi - ' + labelFor(items[i].label) + ' (1080p)',
         url: url,
         quality: '1080p',
         format: 'hls',
@@ -143,43 +140,7 @@ async function getStreams(id, mediaType, season, episode) {
         provider: 'yabancidizi',
         headers: headers,
         behaviorHints: { notWebReady: true, proxyHeaders: { request: headers } }
-      };
-      streams.push(stream);
-      if (label.indexOf('Dublaj') !== -1) {
-        if (!dubStream) dubStream = stream;
-      } else if (!subStream) {
-        subStream = stream;
-      }
-    }
-
-    if (config.muxBase && subStream && dubStream) {
-      var mux =
-        config.muxBase.replace(/\/+$/, '') +
-        '/mux?video=' +
-        encodeURIComponent(subStream.url) +
-        '&audio=' +
-        encodeURIComponent(dubStream.url) +
-        '&referer=' +
-        encodeURIComponent('https://vidmoly.biz/');
-      if (config.muxToken) mux += '&token=' + encodeURIComponent(config.muxToken);
-      console.log(
-        '[YabanciDizi] ' + show.s_name + ' S' + season + 'E' + episode + ' -> dual mux'
-      );
-      return [
-        {
-          name: 'YabancıDizi',
-          title: 'YabancıDizi - Dual [Orijinal / Türkçe Dublaj] (1080p)',
-          url: mux,
-          quality: '1080p',
-          format: 'hls',
-          isHls: true,
-          language: 'tr',
-          provider: 'yabancidizi',
-          headers: {},
-          behaviorHints: {},
-          subtitles: []
-        }
-      ];
+      });
     }
 
     console.log('[YabanciDizi] ' + show.s_name + ' S' + season + 'E' + episode + ' -> ' + streams.length);
