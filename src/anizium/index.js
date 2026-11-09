@@ -239,34 +239,37 @@ async function sourceData(aniziumId, isSeries, season, episode, tmdbId, tmdbSeas
   var s = season == null ? 1 : Number(season);
   var e = Number(episode) || 1;
 
-  // Fast path: the requested season/episode exists as-is. This avoids the huge
-  // /anime/get payload (One Piece is ~959 KB) for normal anime.
-  var direct = await aniziumFetch('/anime/source', {
+  // Fast path: try the requested season/episode and the flat season-1 absolute
+  // episode together. This avoids the huge /anime/get payload (One Piece is
+  // ~959 KB) and does not add a second round-trip for One Piece.
+  var absolute =
+    season == null ? e : await tmdb.absoluteEpisode(tmdbId, season, episode, tmdbSeasons);
+  var wantFlat = absolute && (absolute !== e || s !== 1);
+  var directPromise = aniziumFetch('/anime/source', {
     id: aniziumId,
     site: 'main',
     server: '1',
     season: s,
     episode: e
   });
+  var flatPromise = wantFlat
+    ? aniziumFetch('/anime/source', {
+        id: aniziumId,
+        site: 'main',
+        server: '1',
+        season: 1,
+        episode: absolute
+      })
+    : Promise.resolve(null);
+
+  var pair = await Promise.all([directPromise, flatPromise]);
+  var direct = pair[0];
   if (direct && direct.success && Array.isArray(direct.groups) && direct.groups.length) {
     return { data: direct, target: { season: s, episode: e } };
   }
-
-  // Flat-season fallback (One Piece S20+ and similar): try the absolute episode
-  // in season 1 before downloading the full episode list.
-  var absolute =
-    season == null ? e : await tmdb.absoluteEpisode(tmdbId, season, episode, tmdbSeasons);
-  if (absolute && (absolute !== e || s !== 1)) {
-    var flat = await aniziumFetch('/anime/source', {
-      id: aniziumId,
-      site: 'main',
-      server: '1',
-      season: 1,
-      episode: absolute
-    });
-    if (flat && flat.success && Array.isArray(flat.groups) && flat.groups.length) {
-      return { data: flat, target: { season: 1, episode: absolute } };
-    }
+  var flat = pair[1];
+  if (flat && flat.success && Array.isArray(flat.groups) && flat.groups.length) {
+    return { data: flat, target: { season: 1, episode: absolute } };
   }
 
   if (s !== 1) {

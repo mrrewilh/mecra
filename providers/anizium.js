@@ -1,4 +1,4 @@
-/** Mecra provider: anizium | v0.1.3 */
+/** Mecra provider: anizium | v0.1.4 */
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __commonJS = (cb, mod) => function __require() {
   try {
@@ -574,28 +574,30 @@ function sourceData(aniziumId, isSeries, season, episode, tmdbId, tmdbSeasons) {
     }
     var s = season == null ? 1 : Number(season);
     var e = Number(episode) || 1;
-    var direct = yield aniziumFetch("/anime/source", {
+    var absolute = season == null ? e : yield tmdb.absoluteEpisode(tmdbId, season, episode, tmdbSeasons);
+    var wantFlat = absolute && (absolute !== e || s !== 1);
+    var directPromise = aniziumFetch("/anime/source", {
       id: aniziumId,
       site: "main",
       server: "1",
       season: s,
       episode: e
     });
+    var flatPromise = wantFlat ? aniziumFetch("/anime/source", {
+      id: aniziumId,
+      site: "main",
+      server: "1",
+      season: 1,
+      episode: absolute
+    }) : Promise.resolve(null);
+    var pair = yield Promise.all([directPromise, flatPromise]);
+    var direct = pair[0];
     if (direct && direct.success && Array.isArray(direct.groups) && direct.groups.length) {
       return { data: direct, target: { season: s, episode: e } };
     }
-    var absolute = season == null ? e : yield tmdb.absoluteEpisode(tmdbId, season, episode, tmdbSeasons);
-    if (absolute && (absolute !== e || s !== 1)) {
-      var flat = yield aniziumFetch("/anime/source", {
-        id: aniziumId,
-        site: "main",
-        server: "1",
-        season: 1,
-        episode: absolute
-      });
-      if (flat && flat.success && Array.isArray(flat.groups) && flat.groups.length) {
-        return { data: flat, target: { season: 1, episode: absolute } };
-      }
+    var flat = pair[1];
+    if (flat && flat.success && Array.isArray(flat.groups) && flat.groups.length) {
+      return { data: flat, target: { season: 1, episode: absolute } };
     }
     if (s !== 1) {
       var raw = yield aniziumFetch("/anime/source", {

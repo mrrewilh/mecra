@@ -31,6 +31,26 @@ node build.js        # build src/<provider>/index.js -> providers/<name>.js
 npm test             # scrape real sites and probe the first stream
 ```
 
+## Debug & compare
+
+`npm run debug` runs a provider with Nuvio's contract, traces every request, and
+can emulate Nuvio's 1 MB fetch cap and 60 s timeout:
+
+```bash
+# One provider
+npm run debug -- mecra/anizium 37854 tv 23 1173 --trace
+
+# Compare Mecra with an Anthology provider
+npm run debug -- compare 37854 tv 23 1173 \
+  --providers mecra/anizium,anthology/anizium --trace
+
+# JSON output
+npm run debug -- compare 37854 tv 23 1173 --providers mecra/anizium,anthology/anizium --json
+```
+
+It reports time, request count, downloaded bytes, truncation, stream count, and
+the first stream. Reference repos live under `reference/repos/`.
+
 `providers/` is generated but committed: Nuvio loads those bundles.
 
 Details and testing notes: `.opencode/scratchpad/README.md`.

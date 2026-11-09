@@ -31,6 +31,8 @@ Own plugin, not an Anthology fork. Plugin-only; sports deferred.
 npm install --prefix .deps   # esbuild + test tools
 node build.js                # build all providers
 npm test                     # scrape real sites, probe the first stream
+npm run debug -- compare 37854 tv 23 1173 \
+  --providers mecra/anizium,anthology/anizium --trace
 ```
 
 ## Details
