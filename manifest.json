@@ -1,0 +1,86 @@
+{
+  "name": "Mecra",
+  "version": "0.1.0",
+  "author": "Mecra",
+  "description": "Türkçe film, dizi ve anime için Nuvio eklentisi",
+  "scrapers": [
+    {
+      "id": "hdfilmcehennemi",
+      "name": "HDFilmCehennemi",
+      "description": "1080p dual audio (TR/Original) HLS",
+      "version": "0.1.0",
+      "author": "Mecra",
+      "filename": "providers/hdfilmcehennemi.js",
+      "supportedTypes": ["movie", "tv"],
+      "enabled": true,
+      "contentLanguage": ["tr"],
+      "formats": ["hls"],
+      "supportsExternalPlayer": true
+    },
+    {
+      "id": "liderfilmizle",
+      "name": "LiderFilm",
+      "description": "Film ve diziler, dual audio HLS + VTT",
+      "version": "0.1.0",
+      "author": "Mecra",
+      "filename": "providers/liderfilmizle.js",
+      "supportedTypes": ["movie", "tv"],
+      "enabled": true,
+      "contentLanguage": ["tr"],
+      "formats": ["hls"],
+      "supportsExternalPlayer": true
+    },
+    {
+      "id": "diziyou",
+      "name": "DiziYou",
+      "description": "Türkçe dizi arşivi, HLS + VTT",
+      "version": "0.1.0",
+      "author": "Mecra",
+      "filename": "providers/diziyou.js",
+      "supportedTypes": ["tv"],
+      "enabled": true,
+      "contentLanguage": ["tr"],
+      "formats": ["hls"],
+      "supportsExternalPlayer": true
+    },
+    {
+      "id": "yabancidizi",
+      "name": "YabancıDizi",
+      "description": "Yabancı diziler, Türkçe altyazı/dublaj",
+      "version": "0.1.0",
+      "author": "Mecra",
+      "filename": "providers/yabancidizi.js",
+      "supportedTypes": ["tv"],
+      "enabled": true,
+      "contentLanguage": ["tr"],
+      "formats": ["hls"],
+      "supportsExternalPlayer": true
+    },
+    {
+      "id": "cizgimax",
+      "name": "ÇizgiMax",
+      "description": "Türkçe anime ve çizgi diziler",
+      "version": "0.1.0",
+      "author": "Mecra",
+      "filename": "providers/cizgimax.js",
+      "supportedTypes": ["tv"],
+      "enabled": true,
+      "contentLanguage": ["tr"],
+      "formats": ["mp4"],
+      "supportsExternalPlayer": true
+    },
+    {
+      "id": "anizium",
+      "name": "Anizium",
+      "description": "Türkçe dublaj/altyazılı anime, 4K desteği",
+      "version": "0.1.0",
+      "author": "Mecra",
+      "filename": "providers/anizium.js",
+      "supportedTypes": ["movie", "tv"],
+      "enabled": true,
+      "contentLanguage": ["tr"],
+      "formats": ["mp4", "hls"],
+      "supportsExternalPlayer": true
+    }
+  ]
+}
