@@ -1,5 +1,6 @@
 node_modules/
 .deps/node_modules/
+.deps/gui/
 reference/
 *.log
 .DS_Store

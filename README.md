@@ -51,6 +51,14 @@ npm run debug -- compare 37854 tv 23 1173 --providers mecra/anizium,anthology/an
 It reports time, request count, downloaded bytes, truncation, stream count, and
 the first stream. Reference repos live under `reference/repos/`.
 
+To test the real app off-screen:
+
+```bash
+scripts/nuvio-desktop.sh start
+scripts/nuvio-desktop.sh shot .deps/gui/shot.png
+scripts/nuvio-desktop.sh stop
+```
+
 `providers/` is generated but committed: Nuvio loads those bundles.
 
 Details and testing notes: `.opencode/scratchpad/README.md`.

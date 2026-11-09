@@ -13,31 +13,31 @@ npm notice run node scripts/test-providers.js
 [HDFilmCehennemi] oppenheimer-4 -> HDFilmCehennemi - Dual [Turkish / Original Audio] (1080p)
 
 === hdfilmcehennemi | Oppenheimer ===
-PASS: 1 stream(s) in 1004 ms | probe=200 application/vnd.apple.mpegurl
+PASS: 1 stream(s) in 1081 ms | probe=200 application/vnd.apple.mpegurl
   [1] HDFilmCehennemi - Dual [Turkish / Original Audio] (1080p) | quality=1080p | subs=6
-      https://srv12.cdnimages1878.cyou/hls/oppenheimer-2023-bluray-trdualmp4-RnM64yuM42u.mp4/txt/master.txt
+      https://srv12.cdnimages732.cyou/hls/oppenheimer-2023-bluray-trdualmp4-RnM64yuM42u.mp4/txt/master.txt
 [HDFilmCehennemi] Stranger Things S1E1 -> HDFilmCehennemi - Dual [Turkish / Original Audio] (1080p)
 
 === hdfilmcehennemi | Stranger Things S1E1 ===
-PASS: 1 stream(s) in 786 ms | probe=200 application/vnd.apple.mpegurl
+PASS: 1 stream(s) in 830 ms | probe=200 application/vnd.apple.mpegurl
   [1] HDFilmCehennemi - Dual [Turkish / Original Audio] (1080p) | quality=1080p | subs=5
-      https://srv12.cdnimages2434.shop/hls/strangerthings-s01e01-dual-7c45x8vyq354mp4-Bd5Otk48Hdr.mp4/txt/master.txt
+      https://srv12.cdnimages1541.shop/hls/strangerthings-s01e01-dual-7c45x8vyq354mp4-Bd5Otk48Hdr.mp4/txt/master.txt
 [LiderFilm] Oppenheimer movie -> 1
 
 === liderfilmizle | Oppenheimer ===
-PASS: 1 stream(s) in 2485 ms | probe=200 application/vnd.apple.mpegurl
+PASS: 1 stream(s) in 3392 ms | probe=200 application/vnd.apple.mpegurl
   [1] LiderFilm - Dual [English / Türkçe] (1080p) | quality=1080p | subs=0
       https://p2km.uk-traffic-076.com/hls2/01/00020/c73je4ekqgqu_n/master.m3u8
 [LiderFilm] Breaking Bad S1E1 -> 1
 
 === liderfilmizle | Breaking Bad S1E1 ===
-PASS: 1 stream(s) in 3098 ms | probe=200 application/vnd.apple.mpegurl
+PASS: 1 stream(s) in 3256 ms | probe=200 application/vnd.apple.mpegurl
   [1] LiderFilm - Dual [English / Türkçe] (1080p) | quality=1080p | subs=0
       https://pa2s.uk-traffic-076.com/hls2/02/00006/ng8w9g7axg39_n/master.m3u8
 [DiziYou] Breaking Bad S1E1
 
 === diziyou | Breaking Bad S1E1 ===
-PASS: 2 stream(s) in 1464 ms | probe=200 application/vnd.apple.mpegurl
+PASS: 2 stream(s) in 1271 ms | probe=200 application/vnd.apple.mpegurl
   [1] DiziYou - Türkçe Altyazılı (1080p) | quality=1080p | subs=1
       https://storage.diziyou.one/episodes/10551/play.m3u8
   [2] DiziYou - Türkçe Dublaj (1080p) | quality=1080p | subs=1
@@ -45,13 +45,13 @@ PASS: 2 stream(s) in 1464 ms | probe=200 application/vnd.apple.mpegurl
 [YabanciDizi] House M.D. S1E1 -> 1
 
 === yabancidizi | House M.D. S1E1 ===
-PASS: 1 stream(s) in 1725 ms | probe=200 application/vnd.apple.mpegurl
+PASS: 1 stream(s) in 1479 ms | probe=200 application/vnd.apple.mpegurl
   [1] YabancıDizi - Türkçe Altyazılı (1080p) | quality=1080p | subs=0
       https://prx-1357-ant-v.vmget.online/hls2/03/00172/dq2cdierpkpw_,n,l,.urlset/master.m3u8
 [CizgiMax] One Piece S1E1 -> 3 stream(s)
 
 === cizgimax | One Piece S1E1 ===
-PASS: 3 stream(s) in 1540 ms | probe=206 video/mp4
+PASS: 3 stream(s) in 1471 ms | probe=206 video/mp4
   [1] ÇizgiMax - Bölüm 1 - Türkçe (1080p) | quality=1080p | subs=0
       https://merten-2.cfd/file/tau-video/66_1_1_1080p.mp4
   [2] ÇizgiMax - Bölüm 1 - Türkçe (720p) | quality=720p | subs=0
@@ -61,7 +61,7 @@ PASS: 3 stream(s) in 1540 ms | probe=206 video/mp4
 [CizgiMax] One Piece S23E1173 -> 3 stream(s)
 
 === cizgimax | One Piece S23E1173 ===
-PASS: 3 stream(s) in 2210 ms | probe=206 video/mp4
+PASS: 3 stream(s) in 1923 ms | probe=206 video/mp4
   [1] ÇizgiMax - Bölüm 1173 - Türkçe (1080p) | quality=1080p | subs=0
       https://irtau1.online/5d13fe0f-5230-4ed1-9473-b0e96ae0dac6.mp4
   [2] ÇizgiMax - Bölüm 1173 - Türkçe (720p) | quality=720p | subs=0
@@ -71,7 +71,7 @@ PASS: 3 stream(s) in 2210 ms | probe=206 video/mp4
 [CizgiMax] Naruto Shippuden S1E1 -> 2 stream(s)
 
 === cizgimax | Naruto S1E1 ===
-PASS: 2 stream(s) in 2301 ms | probe=200 application/x-mpegURL
+PASS: 2 stream(s) in 2317 ms | probe=200 application/x-mpegURL
   [1] ÇizgiMax - Bölüm 1 - Dublaj - Dzen (HLS) | quality=auto | subs=0
       https://vd616.okcdn.ru/video.m3u8
   [2] ÇizgiMax - Bölüm 1 - Türkçe (480p) | quality=480p | subs=0
@@ -79,67 +79,67 @@ PASS: 2 stream(s) in 2301 ms | probe=200 application/x-mpegURL
 [CizgiMax] Mucize Uğur Böceği ile Kara Kedi S6E26 -> 1 stream(s)
 
 === cizgimax | Miraculous S6E26 ===
-PASS: 1 stream(s) in 1860 ms | probe=200 application/vnd.apple.mpegurl
+PASS: 1 stream(s) in 32010 ms | probe=200 application/vnd.apple.mpegurl
   [1] ÇizgiMax - Bölüm 26 - 1080p (HLS) | quality=auto | subs=0
       https://cizgimax.online/api/stream/mrc/
 [CizgiMax] Ben 10 Omniverse S1E1 -> 1 stream(s)
 
 === cizgimax | Ben 10 Omniverse S1E1 ===
-PASS: 1 stream(s) in 2654 ms | probe=200 application/x-mpegURL
+PASS: 1 stream(s) in 2481 ms | probe=200 application/x-mpegURL
   [1] ÇizgiMax - Bölüm 1 - Dublaj - Dzen (HLS) | quality=auto | subs=0
       https://vd595.okcdn.ru/video.m3u8
-[Anizium] tmdb 19ms
-[Anizium] search 198ms One Piece
-[Anizium] source 155ms
+[Anizium] tmdb 18ms
+[Anizium] search 266ms One Piece
+[Anizium] source 145ms
 [Anizium] id=745549414 S1E1 -> 5 stream(s)
 
 === anizium | One Piece S1E1 ===
-PASS: 5 stream(s) in 1681 ms | probe=206 video/mp4
+PASS: 5 stream(s) in 1498 ms | probe=206 video/mp4
   [1] Anizium - Bölüm 1 - Japonca [TR Altyazılı] (4K UHD) | quality=4K UHD | subs=4
       https://f.aniziumserver.site/37854/1/1/2160p.original.mp4
   [2] Anizium - Bölüm 1 - Japonca [TR Altyazılı] (2K QHD) | quality=2K QHD | subs=4
       https://f.aniziumserver.sbs/37854/1/1/1440p.original.mp4
   [3] Anizium - Bölüm 1 - Japonca [TR Altyazılı] (1080p) | quality=1080p | subs=4
-      https://f.aniziumserver.sbs/37854/1/1/1080p.original.mp4
+      https://f.aniziumserver.site/37854/1/1/1080p.original.mp4
   [4] Anizium - Bölüm 1 - Japonca [TR Altyazılı] (720p) | quality=720p | subs=4
       https://f.aniziumserver.sbs/37854/1/1/720p.original.mp4
-[Anizium] tmdb 18ms
-[Anizium] search 113ms One Piece
-[Anizium] source 153ms
+[Anizium] tmdb 20ms
+[Anizium] search 103ms One Piece
+[Anizium] source 144ms
 [Anizium] id=745549414 S1E1173 -> 5 stream(s)
 
 === anizium | One Piece S23E1173 ===
-PASS: 5 stream(s) in 768 ms | probe=206 video/mp4
+PASS: 5 stream(s) in 881 ms | probe=206 video/mp4
   [1] Anizium - Bölüm 1173 - Japonca [TR Altyazılı] (4K UHD) | quality=4K UHD | subs=2
       https://f.aniziumserver.site/37854/1/1173/2160p.original.mp4
   [2] Anizium - Bölüm 1173 - Japonca [TR Altyazılı] (2K QHD) | quality=2K QHD | subs=2
       https://f.aniziumserver.site/37854/1/1173/1440p.original.mp4
   [3] Anizium - Bölüm 1173 - Japonca [TR Altyazılı] (1080p) | quality=1080p | subs=2
-      https://f.aniziumserver.site/37854/1/1173/1080p.original.mp4
+      https://f.aniziumserver.sbs/37854/1/1173/1080p.original.mp4
   [4] Anizium - Bölüm 1173 - Japonca [TR Altyazılı] (720p) | quality=720p | subs=2
-      https://f.aniziumserver.sbs/37854/1/1173/720p.original.mp4
+      https://f.aniziumserver.site/37854/1/1173/720p.original.mp4
 [Anizium] tmdb 19ms
-[Anizium] search 109ms Naruto
-[Anizium] source 92ms
+[Anizium] search 83ms Naruto
+[Anizium] source 104ms
 [Anizium] id=921466367 S1E1 -> 5 stream(s)
 
 === anizium | Naruto S1E1 ===
-PASS: 5 stream(s) in 574 ms | probe=206 video/mp4
+PASS: 5 stream(s) in 551 ms | probe=206 video/mp4
   [1] Anizium - Bölüm 1 - Japonca [TR Altyazılı] (4K UHD) | quality=4K UHD | subs=6
       https://r.aniziumserver.site/46260/1/1/2160p.original.mp4
   [2] Anizium - Bölüm 1 - Japonca [TR Altyazılı] (2K QHD) | quality=2K QHD | subs=6
       https://r.aniziumserver.site/46260/1/1/1440p.original.mp4
   [3] Anizium - Bölüm 1 - Japonca [TR Altyazılı] (1080p) | quality=1080p | subs=6
-      https://r.aniziumserver.sbs/46260/1/1/1080p.original.mp4
+      https://r.aniziumserver.site/46260/1/1/1080p.original.mp4
   [4] Anizium - Bölüm 1 - Japonca [TR Altyazılı] (720p) | quality=720p | subs=6
-      https://r.aniziumserver.site/46260/1/1/720p.original.mp4
-[Anizium] tmdb 17ms
+      https://r.aniziumserver.sbs/46260/1/1/720p.original.mp4
+[Anizium] tmdb 18ms
 [Anizium] search 102ms One Piece
-[Anizium] source 163ms
+[Anizium] source 157ms
 [Anizium] id=745549414 S1E1 -> 5 stream(s)
-[Anizium] tmdb 17ms
-[Anizium] search 167ms One Piece
-[Anizium] source 130ms
+[Anizium] tmdb 19ms
+[Anizium] search 96ms One Piece
+[Anizium] source 140ms
 [Anizium] id=745549414 S1E1173 -> 5 stream(s)
 
 PASS: Anizium One Piece S23E1173 maps to episode 1173

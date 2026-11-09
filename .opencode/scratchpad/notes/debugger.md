@@ -54,6 +54,27 @@ Use `--cap` to reproduce NuvioTV's 1 MB limit. ÇizgiMax episode pages around
 1.8 MB will be truncated and return no streams; that is a real client limit, not
 a provider bug.
 
+## Nuvio Desktop in a sandbox
+
+`scripts/nuvio-desktop.sh` runs the real Nuvio Desktop AppImage on an off-screen
+Xvfb display (`:99`) with its own HOME under `.deps/gui/`. It never appears on the
+user's screen.
+
+```bash
+scripts/nuvio-desktop.sh start
+scripts/nuvio-desktop.sh shot .deps/gui/shot.png
+scripts/nuvio-desktop.sh click 500 400
+scripts/nuvio-desktop.sh type "Serial Experiments Lain"
+scripts/nuvio-desktop.sh key Return
+scripts/nuvio-desktop.sh scroll down 5
+scripts/nuvio-desktop.sh stop
+```
+
+Tested with Nuvio Desktop `0.1.35-alpha`, Mecra `0.1.5`, and Cinemeta. On
+Serial Experiments Lain S1E1 the source list showed all Anizium rows within
+~2 seconds while LiderFilm, DiziYou, and ÇizgiMax still said "Alınıyor...".
+Anizium is the fastest Mecra provider in that test, not the slowest.
+
 ## On-device logs
 
 The debugger simulates the contract; it does not render the Nuvio UI. For a real

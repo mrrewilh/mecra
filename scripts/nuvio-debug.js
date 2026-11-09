@@ -40,13 +40,21 @@ const options = {
 };
 
 const positional = [];
-for (const arg of args) {
+for (let i = 0; i < args.length; i++) {
+  const arg = args[i];
   if (arg === '--trace') options.trace = true;
   else if (arg === '--json') options.json = true;
   else if (arg === '--no-cap') options.cap = 0;
   else if (arg.startsWith('--cap=')) options.cap = Number(arg.slice(6)) || 0;
+  else if (arg === '--cap') options.cap = Number(args[++i]) || 0;
   else if (arg.startsWith('--timeout=')) options.timeout = Number(arg.slice(10)) || 60000;
-  else if (arg.startsWith('--providers=')) {
+  else if (arg === '--timeout') options.timeout = Number(args[++i]) || 60000;
+  else if (arg === '--providers') {
+    options.providers = String(args[++i] || '')
+      .split(',')
+      .map((value) => value.trim())
+      .filter(Boolean);
+  } else if (arg.startsWith('--providers=')) {
     options.providers = arg
       .slice(12)
       .split(',')

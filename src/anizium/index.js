@@ -1,3 +1,9 @@
+/**
+ * Anizium provider.
+ * Based on falsisdev/anthology's Anizium provider (GPL-3.0), with the One Piece
+ * fixes: exact/type search and absolute episode mapping. The flow is the same:
+ * TMDB title -> Anizium search -> /anime/source.
+ */
 var config = require('../shared/config');
 var http = require('../shared/http');
 var tmdb = require('../shared/tmdb');
