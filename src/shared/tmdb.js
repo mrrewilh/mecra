@@ -77,32 +77,26 @@ async function resolveTmdbInfo(id, mediaType) {
 async function absoluteEpisode(tmdbId, season, episode) {
   if (season == null || episode == null) return episode;
   var target = Number(episode);
-
-  // Some TMDB seasons (One Piece S20+) store absolute episode numbers instead
-  // of 1-based numbers. If the requested episode is in the season and the
-  // season does not start at 1, the number is already absolute.
-  var seasonData = await http.fetchJson(
-    api('/tv/' + tmdbId + '/season/' + season, { language: 'en-US' })
-  );
-  var seasonEpisodes = (seasonData && seasonData.episodes) || [];
-  if (seasonEpisodes.length) {
-    var first = Number(seasonEpisodes[0].episode_number);
-    var hasTarget = false;
-    for (var s = 0; s < seasonEpisodes.length; s++) {
-      if (Number(seasonEpisodes[s].episode_number) === target) {
-        hasTarget = true;
-        break;
-      }
-    }
-    if (hasTarget && first > 1) return target;
-  }
+  var seasonNumber = Number(season);
 
   var data = await http.fetchJson(api('/tv/' + tmdbId, { language: 'en-US' }));
   var seasons = (data && data.seasons) || [];
+  var seasonInfo = null;
+  for (var s = 0; s < seasons.length; s++) {
+    if (Number(seasons[s].season_number) === seasonNumber) {
+      seasonInfo = seasons[s];
+      break;
+    }
+  }
+
+  // One Piece S20+ already stores absolute episode numbers (S23E1173 = 1173).
+  // An absolute number is larger than the number of episodes in that season.
+  if (seasonInfo && target > (seasonInfo.episode_count || 0)) return target;
+
   var total = 0;
   for (var i = 0; i < seasons.length; i++) {
     var number = seasons[i].season_number;
-    if (number > 0 && number < Number(season)) {
+    if (number > 0 && number < seasonNumber) {
       total += seasons[i].episode_count || 0;
     }
   }

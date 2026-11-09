@@ -1,4 +1,4 @@
-/** Mecra provider: yabancidizi | v0.1.1 */
+/** Mecra provider: yabancidizi | v0.1.2 */
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __commonJS = (cb, mod) => function __require() {
   try {
@@ -201,27 +201,21 @@ var require_tmdb = __commonJS({
       return __async(this, null, function* () {
         if (season == null || episode == null) return episode;
         var target = Number(episode);
-        var seasonData = yield http2.fetchJson(
-          api("/tv/" + tmdbId + "/season/" + season, { language: "en-US" })
-        );
-        var seasonEpisodes = seasonData && seasonData.episodes || [];
-        if (seasonEpisodes.length) {
-          var first = Number(seasonEpisodes[0].episode_number);
-          var hasTarget = false;
-          for (var s = 0; s < seasonEpisodes.length; s++) {
-            if (Number(seasonEpisodes[s].episode_number) === target) {
-              hasTarget = true;
-              break;
-            }
-          }
-          if (hasTarget && first > 1) return target;
-        }
+        var seasonNumber = Number(season);
         var data = yield http2.fetchJson(api("/tv/" + tmdbId, { language: "en-US" }));
         var seasons = data && data.seasons || [];
+        var seasonInfo = null;
+        for (var s = 0; s < seasons.length; s++) {
+          if (Number(seasons[s].season_number) === seasonNumber) {
+            seasonInfo = seasons[s];
+            break;
+          }
+        }
+        if (seasonInfo && target > (seasonInfo.episode_count || 0)) return target;
         var total = 0;
         for (var i = 0; i < seasons.length; i++) {
           var number = seasons[i].season_number;
-          if (number > 0 && number < Number(season)) {
+          if (number > 0 && number < seasonNumber) {
             total += seasons[i].episode_count || 0;
           }
         }
