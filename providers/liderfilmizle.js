@@ -45,9 +45,20 @@ var require_config = __commonJS({
       }
       return "";
     }
+    function globalValue(name) {
+      try {
+        return typeof globalThis !== "undefined" && globalThis[name] ? String(globalThis[name]) : "";
+      } catch (e) {
+        return "";
+      }
+    }
+    var MUX_BASE = "";
+    var MUX_TOKEN = "";
     module2.exports = {
       ua: UA,
       tmdbKey,
+      muxBase: MUX_BASE || globalValue("MECRA_MUX_BASE"),
+      muxToken: MUX_TOKEN || globalValue("MECRA_MUX_TOKEN"),
       sites: {
         hdfilmcehennemi: "https://www.hdfilmcehennemi.nl",
         hdfilmcehennemiEmbed: "https://hdfilmcehennemi.mobi",

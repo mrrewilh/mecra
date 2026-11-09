@@ -132,6 +132,35 @@ function buildStreams(info, html, episodeUrl) {
   var streams = [];
   var hasSub = html.indexOf('turkceAltyazili') !== -1;
   var hasDub = html.indexOf('turkceDublaj') !== -1;
+  var subUrl = STORAGE + '/episodes/' + itemId + '/play.m3u8';
+  var dubUrl = STORAGE + '/episodes/' + itemId + '_tr/play.m3u8';
+
+  if (config.muxBase && hasSub && hasDub) {
+    var mux =
+      config.muxBase.replace(/\/+$/, '') +
+      '/mux?video=' +
+      encodeURIComponent(subUrl) +
+      '&audio=' +
+      encodeURIComponent(dubUrl) +
+      '&referer=' +
+      encodeURIComponent(BASE + '/');
+    if (config.muxToken) mux += '&token=' + encodeURIComponent(config.muxToken);
+    return [
+      {
+        name: 'DiziYou',
+        title: 'DiziYou - Dual [Orijinal / Türkçe Dublaj] (1080p)',
+        url: mux,
+        quality: '1080p',
+        format: 'hls',
+        isHls: true,
+        language: 'tr',
+        provider: 'diziyou',
+        headers: {},
+        behaviorHints: {},
+        subtitles: subs
+      }
+    ];
+  }
 
   if (hasSub) {
     streams.push({

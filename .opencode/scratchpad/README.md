@@ -19,4 +19,6 @@ Six providers built and passing against real sites:
 - ÇizgiMax (anime, scraped page → Tau player)
 - Anizium (anime, fixed One Piece absolute mapping)
 
-`npm test` builds nothing; run `node build.js` first after editing `src/`.
+`npm test` builds first. `server/` is the optional mux service that turns
+DiziYou/YabancıDizi dub+sub files into one stream with selectable audio;
+`npm run test:mux` verifies it.

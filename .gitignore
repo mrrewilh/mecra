@@ -1,5 +1,6 @@
 node_modules/
 .deps/node_modules/
 reference/
+server/cache/
 *.log
 .DS_Store

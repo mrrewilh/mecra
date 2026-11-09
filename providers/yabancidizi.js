@@ -45,9 +45,20 @@ var require_config = __commonJS({
       }
       return "";
     }
+    function globalValue(name) {
+      try {
+        return typeof globalThis !== "undefined" && globalThis[name] ? String(globalThis[name]) : "";
+      } catch (e) {
+        return "";
+      }
+    }
+    var MUX_BASE = "";
+    var MUX_TOKEN = "";
     module2.exports = {
       ua: UA,
       tmdbKey,
+      muxBase: MUX_BASE || globalValue("MECRA_MUX_BASE"),
+      muxToken: MUX_TOKEN || globalValue("MECRA_MUX_TOKEN"),
       sites: {
         hdfilmcehennemi: "https://www.hdfilmcehennemi.nl",
         hdfilmcehennemiEmbed: "https://hdfilmcehennemi.mobi",
@@ -435,13 +446,16 @@ function getStreams(id, mediaType, season, episode) {
       if (!html) return [];
       var items = extractVidmoly(html);
       var streams = [];
+      var subStream = null;
+      var dubStream = null;
       for (var i = 0; i < items.length; i++) {
         var url = yield resolveVidmoly(items[i].id);
         if (!url) continue;
         var headers = http.headers({ Referer: "https://vidmoly.biz/" });
-        streams.push({
+        var label = labelFor(items[i].label);
+        var stream = {
           name: "Yabanc\u0131Dizi",
-          title: "Yabanc\u0131Dizi - " + labelFor(items[i].label) + " (1080p)",
+          title: "Yabanc\u0131Dizi - " + label + " (1080p)",
           url,
           quality: "1080p",
           format: "hls",
@@ -450,7 +464,35 @@ function getStreams(id, mediaType, season, episode) {
           provider: "yabancidizi",
           headers,
           behaviorHints: { notWebReady: true, proxyHeaders: { request: headers } }
-        });
+        };
+        streams.push(stream);
+        if (label.indexOf("Dublaj") !== -1) {
+          if (!dubStream) dubStream = stream;
+        } else if (!subStream) {
+          subStream = stream;
+        }
+      }
+      if (config.muxBase && subStream && dubStream) {
+        var mux = config.muxBase.replace(/\/+$/, "") + "/mux?video=" + encodeURIComponent(subStream.url) + "&audio=" + encodeURIComponent(dubStream.url) + "&referer=" + encodeURIComponent("https://vidmoly.biz/");
+        if (config.muxToken) mux += "&token=" + encodeURIComponent(config.muxToken);
+        console.log(
+          "[YabanciDizi] " + show.s_name + " S" + season + "E" + episode + " -> dual mux"
+        );
+        return [
+          {
+            name: "Yabanc\u0131Dizi",
+            title: "Yabanc\u0131Dizi - Dual [Orijinal / T\xFCrk\xE7e Dublaj] (1080p)",
+            url: mux,
+            quality: "1080p",
+            format: "hls",
+            isHls: true,
+            language: "tr",
+            provider: "yabancidizi",
+            headers: {},
+            behaviorHints: {},
+            subtitles: []
+          }
+        ];
       }
       console.log("[YabanciDizi] " + show.s_name + " S" + season + "E" + episode + " -> " + streams.length);
       return quality.sortStreamsByQuality(streams);

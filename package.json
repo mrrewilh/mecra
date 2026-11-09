@@ -8,7 +8,9 @@
     "build:watch": "node build.js --watch",
     "pretest": "node build.js",
     "test": "node scripts/test-providers.js",
-    "test:provider": "node scripts/test-providers.js"
+    "test:provider": "node scripts/test-providers.js",
+    "test:mux": "node scripts/test-mux.js",
+    "mux": "node server/index.js"
   },
   "license": "GPL-3.0"
 }
