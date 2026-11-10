@@ -1,4 +1,4 @@
-/** Mecra provider: anizium | v0.1.5 */
+/** Mecra provider: anizium | v0.1.6 */
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __commonJS = (cb, mod) => function __require() {
   try {
@@ -28,236 +28,31 @@ var __async = (__this, __arguments, generator) => {
   });
 };
 
-// src/shared/config.js
-var require_config = __commonJS({
-  "src/shared/config.js"(exports2, module2) {
-    var UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
-    function tmdbKey() {
-      try {
-        if (typeof TMDB_API_KEY !== "undefined" && TMDB_API_KEY) return TMDB_API_KEY;
-      } catch (e) {
-      }
-      try {
-        if (typeof globalThis !== "undefined" && globalThis.TMDB_API_KEY) {
-          return globalThis.TMDB_API_KEY;
-        }
-      } catch (e) {
-      }
-      return "";
+// src/shared/quality.js
+var require_quality = __commonJS({
+  "src/shared/quality.js"(exports2, module2) {
+    function qualityScore(stream) {
+      if (!stream) return 0;
+      var text2 = ((stream.quality || "") + " " + (stream.title || "") + " " + (stream.name || "")).toLowerCase();
+      if (/\b(4k|2160p?|uhd)\b/.test(text2)) return 2160;
+      if (/\b(2k|1440p?|qhd)\b/.test(text2)) return 1440;
+      if (/\b(1080p?|fhd)\b/.test(text2)) return 1080;
+      if (/\b(720p?)\b/.test(text2)) return 720;
+      if (/\b(540p?)\b/.test(text2)) return 540;
+      if (/\b(480p?)\b/.test(text2)) return 480;
+      if (/\b(360p?)\b/.test(text2)) return 360;
+      if (stream.isHls) return 500;
+      return 1;
     }
-    module2.exports = {
-      ua: UA,
-      tmdbKey,
-      sites: {
-        hdfilmcehennemi: "https://www.hdfilmcehennemi.nl",
-        hdfilmcehennemiEmbed: "https://hdfilmcehennemi.mobi",
-        diziyou: "https://www.diziyou.one",
-        diziyouStorage: "https://storage.diziyou.one",
-        yabancidizi: "https://yabancidizi.news",
-        liderfilmizle: "https://liderfilmizle.vip",
-        liderfilmPlay: "https://play.liderfilm.cc",
-        cizgimax: "https://cizgimax.online",
-        tauVideo: "https://tau-video.xyz",
-        aniziumApi: "https://api.anizium.co",
-        aniziumSite: "https://anizium.co"
-      }
-    };
-  }
-});
-
-// src/shared/http.js
-var require_http = __commonJS({
-  "src/shared/http.js"(exports2, module2) {
-    var config2 = require_config();
-    function headers(extra) {
-      var out = {
-        "User-Agent": config2.ua,
-        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8"
-      };
-      if (extra) {
-        for (var key in extra) {
-          if (Object.prototype.hasOwnProperty.call(extra, key)) out[key] = extra[key];
-        }
-      }
-      return out;
-    }
-    function fetchText(url, options) {
-      return __async(this, null, function* () {
-        try {
-          var res = yield fetch(url, options);
-          if (!res || !res.ok) return null;
-          return yield res.text();
-        } catch (e) {
-          return null;
-        }
-      });
-    }
-    function fetchJson(url, options) {
-      return __async(this, null, function* () {
-        try {
-          var res = yield fetch(url, options);
-          if (!res || !res.ok) return null;
-          return yield res.json();
-        } catch (e) {
-          return null;
-        }
-      });
-    }
-    function fetchStatus(url, options) {
-      return __async(this, null, function* () {
-        try {
-          var res = yield fetch(url, options);
-          return res ? res.status : 0;
-        } catch (e) {
-          return 0;
-        }
+    function sortStreamsByQuality2(streams) {
+      if (!Array.isArray(streams) || streams.length < 2) return streams || [];
+      return streams.slice().sort(function(a, b) {
+        return qualityScore(b) - qualityScore(a);
       });
     }
     module2.exports = {
-      headers,
-      fetchText,
-      fetchJson,
-      fetchStatus
-    };
-  }
-});
-
-// src/shared/tmdb.js
-var require_tmdb = __commonJS({
-  "src/shared/tmdb.js"(exports2, module2) {
-    var config2 = require_config();
-    var http2 = require_http();
-    function isTv(mediaType) {
-      return mediaType === "tv" || mediaType === "series";
-    }
-    function api(path, params) {
-      var query = "api_key=" + encodeURIComponent(config2.tmdbKey());
-      if (params) {
-        for (var key in params) {
-          if (Object.prototype.hasOwnProperty.call(params, key)) {
-            query += "&" + key + "=" + encodeURIComponent(params[key]);
-          }
-        }
-      }
-      return "https://api.themoviedb.org/3" + path + "?" + query;
-    }
-    function details(id, type) {
-      return __async(this, null, function* () {
-        return http2.fetchJson(
-          api("/" + type + "/" + id, {
-            language: "tr-TR",
-            append_to_response: "alternative_titles"
-          })
-        );
-      });
-    }
-    function alternativeTitles(data) {
-      var alt = data && data.alternative_titles || {};
-      var list = alt.results || alt.titles || [];
-      var out = [];
-      var seen = {};
-      for (var i = 0; i < list.length; i++) {
-        var title = String(list[i] && list[i].title || "").trim();
-        if (!title || seen[title]) continue;
-        seen[title] = true;
-        out.push({
-          title,
-          country: String(list[i] && list[i].iso_3166_1 || "").toUpperCase()
-        });
-      }
-      return out;
-    }
-    function englishTitleFrom(data) {
-      var list = alternativeTitles(data);
-      for (var i = 0; i < list.length; i++) {
-        if (list[i].country === "US" || list[i].country === "GB") return list[i].title;
-      }
-      return "";
-    }
-    function resolveTmdbInfo(id, mediaType) {
-      return __async(this, null, function* () {
-        var raw = String(id == null ? "" : id).trim();
-        if (raw.indexOf(":") !== -1) raw = raw.split(":")[0];
-        var tv = isTv(mediaType);
-        var type = tv ? "tv" : "movie";
-        var data = null;
-        var numericId = null;
-        if (raw.indexOf("tt") === 0) {
-          var found = yield http2.fetchJson(
-            api("/find/" + raw, { external_source: "imdb_id", language: "tr-TR" })
-          );
-          var list = found ? tv ? found.tv_results : found.movie_results : null;
-          var item = list && list[0];
-          if (item) {
-            numericId = item.id;
-            data = yield details(numericId, type);
-          }
-        } else if (/^\d+$/.test(raw)) {
-          numericId = raw;
-          data = yield details(raw, type);
-        }
-        if (!data) {
-          return {
-            id: numericId,
-            type,
-            isTv: tv,
-            title: "",
-            originalTitle: "",
-            englishTitle: "",
-            alternativeTitles: [],
-            year: "",
-            imdbId: raw.indexOf("tt") === 0 ? raw : "",
-            seasons: []
-          };
-        }
-        var date = data.release_date || data.first_air_date || "";
-        return {
-          id: data.id,
-          type,
-          isTv: tv,
-          title: data.title || data.name || "",
-          originalTitle: data.original_title || data.original_name || "",
-          englishTitle: englishTitleFrom(data),
-          alternativeTitles: alternativeTitles(data),
-          year: date ? String(date).split("-")[0] : "",
-          imdbId: data.imdb_id || (raw.indexOf("tt") === 0 ? raw : ""),
-          seasons: data.seasons || []
-        };
-      });
-    }
-    function absoluteEpisode(tmdbId, season, episode, seasons) {
-      return __async(this, null, function* () {
-        if (season == null || episode == null) return episode;
-        var target = Number(episode);
-        var seasonNumber = Number(season);
-        var list = seasons;
-        if (!list || !list.length) {
-          var data = yield http2.fetchJson(api("/tv/" + tmdbId, { language: "en-US" }));
-          list = data && data.seasons || [];
-        }
-        var seasonInfo = null;
-        for (var s = 0; s < list.length; s++) {
-          if (Number(list[s].season_number) === seasonNumber) {
-            seasonInfo = list[s];
-            break;
-          }
-        }
-        if (seasonInfo && target > (seasonInfo.episode_count || 0)) return target;
-        var total = 0;
-        for (var i = 0; i < list.length; i++) {
-          var number = list[i].season_number;
-          if (number > 0 && number < seasonNumber) {
-            total += list[i].episode_count || 0;
-          }
-        }
-        return total + target;
-      });
-    }
-    module2.exports = {
-      isTv,
-      resolveTmdbInfo,
-      absoluteEpisode
+      qualityScore,
+      sortStreamsByQuality: sortStreamsByQuality2
     };
   }
 });
@@ -323,151 +118,424 @@ var require_text = __commonJS({
   }
 });
 
-// src/shared/quality.js
-var require_quality = __commonJS({
-  "src/shared/quality.js"(exports2, module2) {
-    function qualityScore(stream) {
-      if (!stream) return 0;
-      var text2 = ((stream.quality || "") + " " + (stream.title || "") + " " + (stream.name || "")).toLowerCase();
-      if (/\b(4k|2160p?|uhd)\b/.test(text2)) return 2160;
-      if (/\b(2k|1440p?|qhd)\b/.test(text2)) return 1440;
-      if (/\b(1080p?|fhd)\b/.test(text2)) return 1080;
-      if (/\b(720p?)\b/.test(text2)) return 720;
-      if (/\b(540p?)\b/.test(text2)) return 540;
-      if (/\b(480p?)\b/.test(text2)) return 480;
-      if (/\b(360p?)\b/.test(text2)) return 360;
-      if (stream.isHls) return 500;
-      return 1;
+// src/shared/config.js
+var require_config = __commonJS({
+  "src/shared/config.js"(exports2, module2) {
+    var UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
+    function tmdbKey() {
+      try {
+        if (typeof TMDB_API_KEY !== "undefined" && TMDB_API_KEY) return TMDB_API_KEY;
+      } catch (e) {
+      }
+      try {
+        if (typeof globalThis !== "undefined" && globalThis.TMDB_API_KEY) {
+          return globalThis.TMDB_API_KEY;
+        }
+      } catch (e) {
+      }
+      return "";
     }
-    function sortStreamsByQuality(streams) {
-      if (!Array.isArray(streams) || streams.length < 2) return streams || [];
-      return streams.slice().sort(function(a, b) {
-        return qualityScore(b) - qualityScore(a);
+    module2.exports = {
+      ua: UA,
+      tmdbKey,
+      sites: {
+        hdfilmcehennemi: "https://www.hdfilmcehennemi.nl",
+        hdfilmcehennemiEmbed: "https://hdfilmcehennemi.mobi",
+        diziyou: "https://www.diziyou.one",
+        diziyouStorage: "https://storage.diziyou.one",
+        yabancidizi: "https://yabancidizi.news",
+        liderfilmizle: "https://liderfilmizle.vip",
+        liderfilmPlay: "https://play.liderfilm.cc",
+        cizgimax: "https://cizgimax.online",
+        tauVideo: "https://tau-video.xyz",
+        aniziumApi: "https://api.anizium.co",
+        aniziumSite: "https://anizium.co"
+      }
+    };
+  }
+});
+
+// src/shared/http.js
+var require_http = __commonJS({
+  "src/shared/http.js"(exports2, module2) {
+    var config = require_config();
+    function headers(extra) {
+      var out = {
+        "User-Agent": config.ua,
+        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8"
+      };
+      if (extra) {
+        for (var key in extra) {
+          if (Object.prototype.hasOwnProperty.call(extra, key)) out[key] = extra[key];
+        }
+      }
+      return out;
+    }
+    function fetchText(url, options) {
+      return __async(this, null, function* () {
+        try {
+          var res = yield fetch(url, options);
+          if (!res || !res.ok) return null;
+          return yield res.text();
+        } catch (e) {
+          return null;
+        }
+      });
+    }
+    function fetchJson(url, options) {
+      return __async(this, null, function* () {
+        try {
+          var res = yield fetch(url, options);
+          if (!res || !res.ok) return null;
+          return yield res.json();
+        } catch (e) {
+          return null;
+        }
+      });
+    }
+    function fetchStatus(url, options) {
+      return __async(this, null, function* () {
+        try {
+          var res = yield fetch(url, options);
+          return res ? res.status : 0;
+        } catch (e) {
+          return 0;
+        }
       });
     }
     module2.exports = {
-      qualityScore,
-      sortStreamsByQuality
+      headers,
+      fetchText,
+      fetchJson,
+      fetchStatus
+    };
+  }
+});
+
+// src/shared/tmdb.js
+var require_tmdb = __commonJS({
+  "src/shared/tmdb.js"(exports2, module2) {
+    var config = require_config();
+    var http = require_http();
+    function isTv(mediaType) {
+      return mediaType === "tv" || mediaType === "series";
+    }
+    function api(path, params) {
+      var query = "api_key=" + encodeURIComponent(config.tmdbKey());
+      if (params) {
+        for (var key in params) {
+          if (Object.prototype.hasOwnProperty.call(params, key)) {
+            query += "&" + key + "=" + encodeURIComponent(params[key]);
+          }
+        }
+      }
+      return "https://api.themoviedb.org/3" + path + "?" + query;
+    }
+    function details(id, type) {
+      return __async(this, null, function* () {
+        return http.fetchJson(
+          api("/" + type + "/" + id, {
+            language: "tr-TR",
+            append_to_response: "alternative_titles"
+          })
+        );
+      });
+    }
+    function alternativeTitles(data) {
+      var alt = data && data.alternative_titles || {};
+      var list = alt.results || alt.titles || [];
+      var out = [];
+      var seen = {};
+      for (var i = 0; i < list.length; i++) {
+        var title = String(list[i] && list[i].title || "").trim();
+        if (!title || seen[title]) continue;
+        seen[title] = true;
+        out.push({
+          title,
+          country: String(list[i] && list[i].iso_3166_1 || "").toUpperCase()
+        });
+      }
+      return out;
+    }
+    function englishTitleFrom(data) {
+      var list = alternativeTitles(data);
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].country === "US" || list[i].country === "GB") return list[i].title;
+      }
+      return "";
+    }
+    function resolveTmdbInfo2(id, mediaType) {
+      return __async(this, null, function* () {
+        var raw = String(id == null ? "" : id).trim();
+        if (raw.indexOf(":") !== -1) raw = raw.split(":")[0];
+        var tv = isTv(mediaType);
+        var type = tv ? "tv" : "movie";
+        var data = null;
+        var numericId = null;
+        if (raw.indexOf("tt") === 0) {
+          var found = yield http.fetchJson(
+            api("/find/" + raw, { external_source: "imdb_id", language: "tr-TR" })
+          );
+          var list = found ? tv ? found.tv_results : found.movie_results : null;
+          var item = list && list[0];
+          if (item) {
+            numericId = item.id;
+            data = yield details(numericId, type);
+          }
+        } else if (/^\d+$/.test(raw)) {
+          numericId = raw;
+          data = yield details(raw, type);
+        }
+        if (!data) {
+          return {
+            id: numericId,
+            type,
+            isTv: tv,
+            title: "",
+            originalTitle: "",
+            englishTitle: "",
+            alternativeTitles: [],
+            year: "",
+            imdbId: raw.indexOf("tt") === 0 ? raw : "",
+            seasons: []
+          };
+        }
+        var date = data.release_date || data.first_air_date || "";
+        return {
+          id: data.id,
+          type,
+          isTv: tv,
+          title: data.title || data.name || "",
+          originalTitle: data.original_title || data.original_name || "",
+          englishTitle: englishTitleFrom(data),
+          alternativeTitles: alternativeTitles(data),
+          year: date ? String(date).split("-")[0] : "",
+          imdbId: data.imdb_id || (raw.indexOf("tt") === 0 ? raw : ""),
+          seasons: data.seasons || []
+        };
+      });
+    }
+    function absoluteEpisode(tmdbId, season, episode, seasons) {
+      return __async(this, null, function* () {
+        if (season == null || episode == null) return episode;
+        var target = Number(episode);
+        var seasonNumber = Number(season);
+        var list = seasons;
+        if (!list || !list.length) {
+          var data = yield http.fetchJson(api("/tv/" + tmdbId, { language: "en-US" }));
+          list = data && data.seasons || [];
+        }
+        var seasonInfo = null;
+        for (var s = 0; s < list.length; s++) {
+          if (Number(list[s].season_number) === seasonNumber) {
+            seasonInfo = list[s];
+            break;
+          }
+        }
+        if (seasonInfo && target > (seasonInfo.episode_count || 0)) return target;
+        var total = 0;
+        for (var i = 0; i < list.length; i++) {
+          var number = list[i].season_number;
+          if (number > 0 && number < seasonNumber) {
+            total += list[i].episode_count || 0;
+          }
+        }
+        return total + target;
+      });
+    }
+    module2.exports = {
+      isTv,
+      resolveTmdbInfo: resolveTmdbInfo2,
+      absoluteEpisode
     };
   }
 });
 
 // src/anizium/index.js
-var config = require_config();
-var http = require_http();
-var tmdb = require_tmdb();
-var text = require_text();
 var quality = require_quality();
-var BASE = config.sites.aniziumApi;
-var SITE = config.sites.aniziumSite;
+var text = require_text();
+var tmdb = require_tmdb();
+var sortStreamsByQuality = quality.sortStreamsByQuality;
+var BASE_URL = "https://api.anizium.co";
+var SITE_ORIGIN = "https://anizium.co";
 var TOKEN_KEY = "hlxjl1c2w281ax473rt1ofgrvhyjvi";
-function cleanStr(value) {
-  return text.clean(value);
+var TMDB_API_KEY2 = "500330721680edb6d5f7f12ba7cd9023";
+var DEFAULT_HEADERS = {
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+  "Origin": "https://anizium.co",
+  "Referer": SITE_ORIGIN + "/",
+  "Accept": "application/json, text/plain, */*"
+};
+function cleanStr(str) {
+  if (!str) return "";
+  var s = str.toString().toLowerCase();
+  try {
+    if (typeof s.normalize === "function") {
+      s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+  } catch (e) {
+  }
+  return s.replace(/[ıİ]/g, "i").replace(/[üÜ]/g, "u").replace(/[öÖ]/g, "o").replace(/[şŞ]/g, "s").replace(/[ğĞ]/g, "g").replace(/[çÇ]/g, "c").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
 }
-function istanbulDay() {
+function getIstanbulDay() {
   var days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
   var now = /* @__PURE__ */ new Date();
   var utc = now.getTime() + now.getTimezoneOffset() * 6e4;
-  return days[new Date(utc + 36e5 * 3).getDay()];
+  var istDate = new Date(utc + 36e5 * 3);
+  return days[istDate.getDay()];
 }
-function xorHex(input, key) {
+function xorEncryptHex(text2, key) {
   var out = "";
-  for (var i = 0; i < input.length; i++) {
-    var hex = (input.charCodeAt(i) ^ key.charCodeAt(i % key.length)).toString(16);
+  for (var i = 0; i < text2.length; i++) {
+    var code = text2.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+    var hex = code.toString(16);
     out += hex.length < 2 ? "0" + hex : hex;
   }
   return out;
 }
-function cfControl() {
-  var key = TOKEN_KEY + "_" + istanbulDay();
-  var random = Math.random().toString(36).substring(2, 8);
+function generateCfControl() {
+  var weekday = getIstanbulDay();
+  var key = TOKEN_KEY + "_" + weekday;
+  var randomKey = Math.random().toString(36).substring(2, 8);
   var payload = {};
-  payload[random] = Date.now();
-  return xorHex(JSON.stringify(payload), key);
+  payload[randomKey] = Date.now();
+  return xorEncryptHex(JSON.stringify(payload), key);
 }
 function aniziumFetch(endpoint, params) {
   return __async(this, null, function* () {
-    var url = BASE + endpoint;
-    if (params) {
+    var url = BASE_URL + endpoint;
+    if (params && Object.keys(params).length > 0) {
       var parts = [];
-      for (var key in params) {
-        if (Object.prototype.hasOwnProperty.call(params, key)) {
-          if (params[key] !== void 0 && params[key] !== null) {
-            parts.push(encodeURIComponent(key) + "=" + encodeURIComponent(params[key]));
+      for (var k in params) {
+        if (params[k] !== void 0 && params[k] !== null) {
+          parts.push(encodeURIComponent(k) + "=" + encodeURIComponent(params[k]));
+        }
+      }
+      if (parts.length > 0) {
+        url += (url.indexOf("?") === -1 ? "?" : "&") + parts.join("&");
+      }
+    }
+    var headers = Object.assign({}, DEFAULT_HEADERS, {
+      "Cf-Control": generateCfControl(),
+      "device": "browser",
+      "language": "tr",
+      "site": "main"
+    });
+    var res = yield fetch(url, { headers });
+    if (!res.ok) return null;
+    return yield res.json();
+  });
+}
+function mapLangCode(group) {
+  var g = (group || "").toLowerCase();
+  switch (g) {
+    case "tr":
+      return { id: "tr", lang: "tur", language: "tr", label: "T\xFCrk\xE7e" };
+    case "en":
+      return { id: "en", lang: "eng", language: "en", label: "\u0130ngilizce" };
+    case "de":
+      return { id: "de", lang: "ger", language: "de", label: "Almanca" };
+    case "fr":
+      return { id: "fr", lang: "fre", language: "fr", label: "Frans\u0131zca" };
+    case "es":
+      return { id: "es", lang: "spa", language: "es", label: "\u0130spanyolca" };
+    case "it":
+      return { id: "it", lang: "ita", language: "it", label: "\u0130talyanca" };
+    case "ar":
+      return { id: "ar", lang: "ara", language: "ar", label: "Arap\xE7a" };
+    default:
+      return { id: g || "unknown", lang: g || "und", language: g || "und", label: g ? g.toUpperCase() : "Altyaz\u0131" };
+  }
+}
+function formatSubtitles(rawSubs) {
+  if (!rawSubs || rawSubs.length === 0) return [];
+  var subs = [];
+  for (var i = 0; i < rawSubs.length; i++) {
+    var s = rawSubs[i];
+    if (!s || !s.link) continue;
+    var info = mapLangCode(s.group);
+    var label = s.name || info.label;
+    subs.push({
+      id: info.id + "_" + (i + 1),
+      url: s.link,
+      file: s.link,
+      link: s.link,
+      lang: info.lang,
+      language: info.language,
+      label,
+      name: label,
+      title: label,
+      format: "vtt",
+      type: "text/vtt",
+      mimeType: "text/vtt",
+      headers: {
+        "Referer": SITE_ORIGIN + "/",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+      }
+    });
+  }
+  return subs;
+}
+function resolveTmdbInfo(id, mediaType) {
+  return __async(this, null, function* () {
+    try {
+      var cleanId = String(id || "").trim();
+      if (cleanId.indexOf(":") !== -1) cleanId = cleanId.split(":")[0];
+      var numericId = null;
+      var titles = [];
+      if (cleanId.indexOf("tt") === 0) {
+        var findRes = yield fetch("https://api.themoviedb.org/3/find/" + cleanId + "?api_key=" + TMDB_API_KEY2 + "&external_source=imdb_id");
+        if (findRes.ok) {
+          var fData = yield findRes.json();
+          var item = mediaType === "tv" || mediaType === "series" ? fData.tv_results && fData.tv_results[0] : fData.movie_results && fData.movie_results[0];
+          if (item) {
+            numericId = item.id;
+            if (item.name) titles.push(item.name);
+            if (item.title) titles.push(item.title);
+            if (item.original_name) titles.push(item.original_name);
+            if (item.original_title) titles.push(item.original_title);
+          }
+        }
+      } else {
+        numericId = cleanId;
+      }
+      if (numericId) {
+        var type = mediaType === "tv" || mediaType === "series" ? "tv" : "movie";
+        var enRes = yield fetch("https://api.themoviedb.org/3/" + type + "/" + numericId + "?api_key=" + TMDB_API_KEY2);
+        if (enRes.ok) {
+          var enData = yield enRes.json();
+          if (enData.name) titles.push(enData.name);
+          if (enData.title) titles.push(enData.title);
+          if (enData.original_name) titles.push(enData.original_name);
+          if (enData.original_title) titles.push(enData.original_title);
+        }
+        var trRes = yield fetch("https://api.themoviedb.org/3/" + type + "/" + numericId + "?api_key=" + TMDB_API_KEY2 + "&language=tr-TR");
+        if (trRes.ok) {
+          var trData = yield trRes.json();
+          if (trData.name) titles.push(trData.name);
+          if (trData.title) titles.push(trData.title);
+        }
+        var altRes = yield fetch("https://api.themoviedb.org/3/" + type + "/" + numericId + "/alternative_titles?api_key=" + TMDB_API_KEY2);
+        if (altRes.ok) {
+          var altData = yield altRes.json();
+          var alts = altData.titles || altData.results || [];
+          for (var i = 0; i < Math.min(alts.length, 6); i++) {
+            if (alts[i].title) titles.push(alts[i].title);
           }
         }
       }
-      if (parts.length) url += (url.indexOf("?") === -1 ? "?" : "&") + parts.join("&");
+      var uniqueQueries = [];
+      for (var j = 0; j < titles.length; j++) {
+        var c = cleanStr(titles[j]);
+        if (c && c.length >= 2 && uniqueQueries.indexOf(c) === -1) {
+          uniqueQueries.push(c);
+        }
+      }
+      return { numericId, uniqueQueries };
+    } catch (e) {
+      return { numericId: null, uniqueQueries: [] };
     }
-    return http.fetchJson(url, {
-      headers: http.headers({
-        Origin: SITE,
-        Referer: SITE + "/",
-        Accept: "application/json, text/plain, */*",
-        "Cf-Control": cfControl(),
-        device: "browser",
-        language: "tr",
-        site: "main"
-      })
-    });
-  });
-}
-function langInfo(group) {
-  switch (String(group || "").toLowerCase()) {
-    case "tr":
-      return { id: "tr", lang: "tur", label: "T\xFCrk\xE7e" };
-    case "en":
-      return { id: "en", lang: "eng", label: "\u0130ngilizce" };
-    case "de":
-      return { id: "de", lang: "ger", label: "Almanca" };
-    case "fr":
-      return { id: "fr", lang: "fre", label: "Frans\u0131zca" };
-    case "es":
-      return { id: "es", lang: "spa", label: "\u0130spanyolca" };
-    default:
-      return {
-        id: group || "und",
-        lang: group || "und",
-        label: group ? String(group).toUpperCase() : "Altyaz\u0131"
-      };
-  }
-}
-function formatSubtitles(list) {
-  if (!Array.isArray(list)) return [];
-  var out = [];
-  for (var i = 0; i < list.length; i++) {
-    var item = list[i];
-    if (!item || !item.link) continue;
-    var info = langInfo(item.group);
-    var label = item.name || info.label;
-    out.push({
-      id: info.id + "_" + (i + 1),
-      url: item.link,
-      lang: info.lang,
-      label
-    });
-  }
-  return out;
-}
-function tmdbQueries(info) {
-  return __async(this, null, function* () {
-    var queries = [];
-    var seen = {};
-    function add(value) {
-      var raw = String(value || "").trim();
-      var key = cleanStr(raw);
-      if (!key || key.length < 2 || seen[key]) return;
-      seen[key] = true;
-      queries.push(raw);
-    }
-    add(info.title);
-    add(info.originalTitle);
-    add(info.englishTitle);
-    var list = info.alternativeTitles || [];
-    for (var i = 0; i < Math.min(list.length, 4); i++) {
-      add(list[i].title);
-    }
-    return queries;
   });
 }
 function typeAllowed(item, isTv) {
@@ -477,18 +545,20 @@ function typeAllowed(item, isTv) {
 }
 function searchAnizium(queries, isTv) {
   return __async(this, null, function* () {
+    if (!queries || queries.length === 0) return null;
     var fallback = null;
     for (var i = 0; i < queries.length; i++) {
-      var query = cleanStr(queries[i]);
+      var q = queries[i];
+      var query = cleanStr(q);
       if (!query) continue;
-      var data = yield aniziumFetch("/page/search", { value: queries[i], page: 1 });
-      var items = data && data.page && data.page.data || [];
+      var sData = yield aniziumFetch("/page/search", { value: q, page: 1 });
+      var items = sData && sData.page && sData.page.data ? sData.page.data : [];
       var prefix = null;
       var contains = null;
       for (var j = 0; j < items.length; j++) {
         var item = items[j];
         if (!typeAllowed(item, isTv)) continue;
-        var name = cleanStr(item.name);
+        var name = cleanStr(item.name || "");
         if (name === query) return item;
         if (!prefix && name.indexOf(query) === 0) prefix = item;
         if (!contains && name.indexOf(query) !== -1) contains = item;
@@ -500,199 +570,116 @@ function searchAnizium(queries, isTv) {
     return fallback;
   });
 }
-function mapAbsolute(seasons, absolute) {
-  var total = 0;
-  for (var i = 0; i < seasons.length; i++) {
-    var episodes = seasons[i].episodes || [];
-    var count = episodes.length;
-    if (absolute <= total + count) {
-      return {
-        season: seasons[i].number || 1,
-        episode: absolute - total
-      };
-    }
-    total += count;
-  }
-  if (seasons.length === 1) {
-    return { season: seasons[0].number || 1, episode: absolute };
-  }
-  return null;
-}
-function resolveEpisode(aniziumId, season, episode, tmdbId, tmdbSeasons) {
-  return __async(this, null, function* () {
-    var detail = yield aniziumFetch("/anime/get", { id: aniziumId });
-    var data = detail && detail.success ? detail.data : null;
-    var seasons = data && data.seasons || [];
-    if (!seasons.length) return { season: 1, episode: Number(episode) || 1 };
-    var s = season == null ? null : Number(season);
-    var e = Number(episode) || 1;
-    if (s != null) {
-      for (var i = 0; i < seasons.length; i++) {
-        if (Number(seasons[i].number) !== s) continue;
-        var eps = seasons[i].episodes || [];
-        for (var j = 0; j < eps.length; j++) {
-          if (Number(eps[j].number) === e) return { season: s, episode: e };
-        }
-      }
-    }
-    var absolute = season == null ? e : yield tmdb.absoluteEpisode(tmdbId, season, episode, tmdbSeasons);
-    var mapped = mapAbsolute(seasons, absolute);
-    if (mapped) return mapped;
-    return { season: seasons[0].number || 1, episode: absolute };
-  });
-}
-function groupInfo(group) {
-  var id = String(group.group || "");
-  if (id === "trdub") return { tag: "T\xFCrk\xE7e Dublaj", language: "tr" };
-  if (id === "original") return { tag: "Japonca [TR Altyaz\u0131l\u0131]", language: "ja" };
-  if (id === "endub") return { tag: "\u0130ngilizce Dublaj", language: "en" };
-  return { tag: group.name || "Japonca", language: "ja" };
-}
-function sourceData(aniziumId, isSeries, season, episode, tmdbId, tmdbSeasons) {
-  return __async(this, null, function* () {
-    if (!isSeries) {
-      var movie = yield aniziumFetch("/anime/source", {
-        id: aniziumId,
-        site: "main",
-        server: "1"
-      });
-      return { data: movie, target: { season: 1, episode: Number(episode) || 1 } };
-    }
-    var s = season == null ? 1 : Number(season);
-    var e = Number(episode) || 1;
-    var absolute = season == null ? e : yield tmdb.absoluteEpisode(tmdbId, season, episode, tmdbSeasons);
-    var wantFlat = absolute && (absolute !== e || s !== 1);
-    var directPromise = aniziumFetch("/anime/source", {
-      id: aniziumId,
-      site: "main",
-      server: "1",
-      season: s,
-      episode: e
-    });
-    var flatPromise = wantFlat ? aniziumFetch("/anime/source", {
-      id: aniziumId,
-      site: "main",
-      server: "1",
-      season: 1,
-      episode: absolute
-    }) : Promise.resolve(null);
-    var pair = yield Promise.all([directPromise, flatPromise]);
-    var direct = pair[0];
-    if (direct && direct.success && Array.isArray(direct.groups) && direct.groups.length) {
-      return { data: direct, target: { season: s, episode: e } };
-    }
-    var flat = pair[1];
-    if (flat && flat.success && Array.isArray(flat.groups) && flat.groups.length) {
-      return { data: flat, target: { season: 1, episode: absolute } };
-    }
-    if (s !== 1) {
-      var raw = yield aniziumFetch("/anime/source", {
-        id: aniziumId,
-        site: "main",
-        server: "1",
-        season: 1,
-        episode: e
-      });
-      if (raw && raw.success && Array.isArray(raw.groups) && raw.groups.length) {
-        return { data: raw, target: { season: 1, episode: e } };
-      }
-    }
-    var target = yield resolveEpisode(aniziumId, season, episode, tmdbId, tmdbSeasons);
-    var mapped = yield aniziumFetch("/anime/source", {
-      id: aniziumId,
-      site: "main",
-      server: "1",
-      season: target.season,
-      episode: target.episode
-    });
-    return { data: mapped, target };
-  });
-}
 function getStreams(id, mediaType, season, episode) {
   return __async(this, null, function* () {
     try {
-      var raw = String(id == null ? "" : id).trim();
-      var isSeries = mediaType === "tv" || mediaType === "series";
+      var rawId = String(id || "").trim();
+      var isTv = mediaType === "tv" || mediaType === "series";
+      var sNum = parseInt(season) || 1;
+      var eNum = parseInt(episode) || 1;
       var aniziumId = null;
-      var tmdbId = null;
-      var directSeason = season;
-      var directEpisode = episode;
-      if (raw.indexOf("anizium:ep:") === 0) {
-        var parts = raw.split(":");
+      var isSeries = isTv;
+      var tmdbNumericId = null;
+      if (rawId.indexOf("anizium:ep:") === 0) {
+        var parts = rawId.split(":");
         aniziumId = parts[2];
-        directSeason = parts[3];
-        directEpisode = parts[4];
+        sNum = parseInt(parts[3]) || 1;
+        eNum = parseInt(parts[4]) || 1;
         isSeries = true;
-      } else if (raw.indexOf("anizium:movie:") === 0) {
-        aniziumId = raw.replace("anizium:movie:", "");
+      } else if (rawId.indexOf("anizium:movie:") === 0) {
+        aniziumId = rawId.replace("anizium:movie:", "");
         isSeries = false;
-      } else if (raw.indexOf("anizium:anime:") === 0) {
-        aniziumId = raw.replace("anizium:anime:", "");
-        isSeries = true;
+      } else if (rawId.indexOf("anizium:anime:") === 0) {
+        aniziumId = rawId.replace("anizium:anime:", "");
       } else {
         var t0 = Date.now();
-        var info = yield tmdb.resolveTmdbInfo(raw, mediaType || "series");
+        var tmdbInfo = yield resolveTmdbInfo(rawId, mediaType);
+        tmdbNumericId = tmdbInfo.numericId;
         console.log("[Anizium] tmdb " + (Date.now() - t0) + "ms");
-        isSeries = info.isTv;
-        tmdbId = info.id;
         var t1 = Date.now();
-        var queries = yield tmdbQueries(info);
-        var matched = yield searchAnizium(queries, isSeries);
+        var matched = yield searchAnizium(tmdbInfo.uniqueQueries, isSeries);
         console.log(
           "[Anizium] search " + (Date.now() - t1) + "ms " + (matched ? matched.name : "no match")
         );
         if (!matched) return [];
         aniziumId = matched.ID;
-        isSeries = matched.type !== "movie";
+        if (matched.type === "movie") isSeries = false;
       }
       if (!aniziumId) return [];
+      var sourceParams = {
+        id: aniziumId,
+        site: "main",
+        server: "1"
+      };
+      if (isSeries) {
+        sourceParams.season = sNum;
+        sourceParams.episode = eNum;
+      }
       var t2 = Date.now();
-      var result = yield sourceData(
-        aniziumId,
-        isSeries,
-        directSeason,
-        directEpisode,
-        tmdbId,
-        info ? info.seasons : null
-      );
+      var srcData = yield aniziumFetch("/anime/source", sourceParams);
+      if (isSeries && (!srcData || !srcData.success || !srcData.groups || srcData.groups.length === 0)) {
+        var absolute = tmdbNumericId ? yield tmdb.absoluteEpisode(tmdbNumericId, sNum, eNum, null) : eNum;
+        if (absolute && (absolute !== eNum || sNum !== 1)) {
+          var flatData = yield aniziumFetch("/anime/source", {
+            id: aniziumId,
+            site: "main",
+            server: "1",
+            season: 1,
+            episode: absolute
+          });
+          if (flatData && flatData.success && flatData.groups && flatData.groups.length) {
+            srcData = flatData;
+            sNum = 1;
+            eNum = absolute;
+          }
+        }
+      }
       console.log("[Anizium] source " + (Date.now() - t2) + "ms");
-      var data = result.data;
-      if (!data || !data.success || !Array.isArray(data.groups) || !data.groups.length) return [];
-      var subtitles = formatSubtitles(data.subtitles);
+      if (!srcData || !srcData.success || !srcData.groups || srcData.groups.length === 0) {
+        return [];
+      }
+      var subtitles = formatSubtitles(srcData.subtitles);
       var streams = [];
-      for (var g = 0; g < data.groups.length; g++) {
-        var group = data.groups[g];
-        var info2 = groupInfo(group);
+      var groups = srcData.groups;
+      for (var g = 0; g < groups.length; g++) {
+        var group = groups[g];
+        var isDub = group.group === "trdub";
+        var isOriginal = group.group === "original";
+        var isEnDub = group.group === "endub";
+        var groupTag = isDub ? "T\xFCrk\xE7e Dublaj" : isOriginal ? "Japonca [TR Altyaz\u0131l\u0131]" : isEnDub ? "\u0130ngilizce Dublaj" : group.name || "Japonca";
         var items = group.items || [];
         items.sort(function(a, b) {
-          return (Number(b.quality) || 0) - (Number(a.quality) || 0);
+          return (parseInt(b.quality) || 0) - (parseInt(a.quality) || 0);
         });
-        for (var i = 0; i < items.length; i++) {
-          var item = items[i];
-          if (!item || !item.link) continue;
-          var label = Number(item.quality) === 2160 ? "4K UHD" : Number(item.quality) === 1440 ? "2K QHD" : Number(item.quality) + "p";
-          var headers = http.headers({ Referer: SITE + "/" });
+        for (var it = 0; it < items.length; it++) {
+          var item = items[it];
+          if (!item.link) continue;
+          var qLabel = item.quality === 2160 ? "4K UHD" : item.quality === 1440 ? "2K QHD" : item.quality + "p";
+          var contentLang = isDub ? "tr" : isEnDub ? "en" : "ja";
+          var streamHeaders = {
+            "User-Agent": DEFAULT_HEADERS["User-Agent"],
+            "Referer": SITE_ORIGIN + "/"
+          };
           streams.push({
             name: "Anizium",
-            title: "Anizium - B\xF6l\xFCm " + result.target.episode + " - " + info2.tag + " (" + label + ")",
+            title: "\u231C Anizium \u231F | " + groupTag + " [" + qLabel + "]",
             url: item.link,
-            quality: label,
+            quality: qLabel,
             format: item.type || "mp4",
             isHls: item.type === "hls",
-            language: info2.language,
+            contentLanguage: contentLang,
             provider: "anizium",
-            headers,
-            behaviorHints: { notWebReady: false, proxyHeaders: { request: headers } },
-            subtitles: subtitles.length ? subtitles : void 0
+            headers: streamHeaders,
+            behaviorHints: {
+              notWebReady: false,
+              proxyHeaders: { request: streamHeaders }
+            },
+            subtitles: subtitles.length > 0 ? subtitles : void 0
           });
         }
       }
-      console.log(
-        "[Anizium] id=" + aniziumId + " S" + result.target.season + "E" + result.target.episode + " -> " + streams.length + " stream(s)"
-      );
-      return quality.sortStreamsByQuality(streams);
+      return streams;
     } catch (e) {
-      console.log("[Anizium] error: " + (e && e.message ? e.message : e));
       return [];
     }
   });
@@ -700,117 +687,82 @@ function getStreams(id, mediaType, season, episode) {
 function getSubtitles(id, mediaType, season, episode) {
   return __async(this, null, function* () {
     try {
-      var raw = String(id == null ? "" : id).trim();
-      var isSeries = mediaType === "tv" || mediaType === "series";
+      var rawId = String(id || "").trim();
+      var isTv = mediaType === "tv" || mediaType === "series";
+      var sNum = parseInt(season) || 1;
+      var eNum = parseInt(episode) || 1;
       var aniziumId = null;
-      var tmdbId = null;
-      var directSeason = season;
-      var directEpisode = episode;
-      if (raw.indexOf("anizium:ep:") === 0) {
-        var parts = raw.split(":");
+      var isSeries = isTv;
+      var tmdbNumericId = null;
+      if (rawId.indexOf("anizium:ep:") === 0) {
+        var parts = rawId.split(":");
         aniziumId = parts[2];
-        directSeason = parts[3];
-        directEpisode = parts[4];
+        sNum = parseInt(parts[3]) || 1;
+        eNum = parseInt(parts[4]) || 1;
         isSeries = true;
-      } else if (raw.indexOf("anizium:movie:") === 0) {
-        aniziumId = raw.replace("anizium:movie:", "");
+      } else if (rawId.indexOf("anizium:movie:") === 0) {
+        aniziumId = rawId.replace("anizium:movie:", "");
         isSeries = false;
-      } else if (raw.indexOf("anizium:anime:") === 0) {
-        aniziumId = raw.replace("anizium:anime:", "");
-        isSeries = true;
+      } else if (rawId.indexOf("anizium:anime:") === 0) {
+        aniziumId = rawId.replace("anizium:anime:", "");
       } else {
-        var info = yield tmdb.resolveTmdbInfo(raw, mediaType || "series");
-        isSeries = info.isTv;
-        tmdbId = info.id;
-        var matched = yield searchAnizium(yield tmdbQueries(info), isSeries);
+        var tmdbInfo = yield resolveTmdbInfo(rawId, mediaType);
+        tmdbNumericId = tmdbInfo.numericId;
+        var matched = yield searchAnizium(tmdbInfo.uniqueQueries, isSeries);
         if (!matched) return { subtitles: [] };
         aniziumId = matched.ID;
-        isSeries = matched.type !== "movie";
+        if (matched.type === "movie") isSeries = false;
       }
       if (!aniziumId) return { subtitles: [] };
-      var result = yield sourceData(
-        aniziumId,
-        isSeries,
-        directSeason,
-        directEpisode,
-        tmdbId,
-        info ? info.seasons : null
-      );
-      var data = result.data;
-      if (!data || !data.subtitles) return { subtitles: [] };
-      return { subtitles: formatSubtitles(data.subtitles) };
+      var sourceParams = { id: aniziumId, site: "main", server: "1" };
+      if (isSeries) {
+        sourceParams.season = sNum;
+        sourceParams.episode = eNum;
+      }
+      var srcData = yield aniziumFetch("/anime/source", sourceParams);
+      if (isSeries && (!srcData || !srcData.subtitles || !srcData.subtitles.length)) {
+        var absolute = tmdbNumericId ? yield tmdb.absoluteEpisode(tmdbNumericId, sNum, eNum, null) : eNum;
+        if (absolute && (absolute !== eNum || sNum !== 1)) {
+          var flatData = yield aniziumFetch("/anime/source", {
+            id: aniziumId,
+            site: "main",
+            server: "1",
+            season: 1,
+            episode: absolute
+          });
+          if (flatData && flatData.subtitles) srcData = flatData;
+        }
+      }
+      if (!srcData || !srcData.subtitles) return { subtitles: [] };
+      return { subtitles: formatSubtitles(srcData.subtitles) };
     } catch (e) {
       return { subtitles: [] };
     }
   });
 }
-function getMeta(args) {
+function getCatalog(args) {
   return __async(this, null, function* () {
     try {
-      var raw = typeof args === "string" ? args : args && args.id;
-      if (!raw || raw.indexOf("anizium:") !== 0) return { meta: null };
-      var cleanId = raw.replace("anizium:anime:", "").replace("anizium:movie:", "");
-      var detail = yield aniziumFetch("/anime/get", { id: cleanId });
-      if (!detail || !detail.success || !detail.data) return { meta: null };
-      var data = detail.data;
-      var isMovie = data.type === "movie";
-      var videos = [];
-      var seasons = data.seasons || [];
-      for (var s = 0; s < seasons.length; s++) {
-        var season = seasons[s];
-        var seasonNumber = season.number || 1;
-        var episodes = season.episodes || [];
-        for (var e = 0; e < episodes.length; e++) {
-          var ep = episodes[e];
-          var epNumber = ep.number || e + 1;
-          videos.push({
-            id: "anizium:ep:" + cleanId + ":" + seasonNumber + ":" + epNumber,
-            title: ep.name ? seasonNumber + ". Sezon " + epNumber + ". B\xF6l\xFCm - " + ep.name : seasonNumber + ". Sezon " + epNumber + ". B\xF6l\xFCm",
-            season: seasonNumber,
-            episode: epNumber
-          });
-        }
-      }
-      return {
-        meta: {
-          id: raw,
-          type: isMovie ? "movie" : "series",
-          name: data.name || "Anime",
-          poster: data.poster || data.details_banner || data.banner,
-          background: data.banner || data.details_banner || data.poster,
-          description: data.overview || data.name || "Anizium",
-          genres: ["Anime", "Anizium"],
-          videos: videos.length ? videos : void 0
-        }
-      };
-    } catch (e2) {
-      return { meta: null };
-    }
-  });
-}
-function getCatalog() {
-  return __async(this, null, function* () {
-    try {
-      var home = yield aniziumFetch("/page/home");
-      if (!home || !home.success) return { metas: [] };
-      var all = [];
-      if (home.settlement_top) all = all.concat(home.settlement_top);
-      if (home.settlement_middle) all = all.concat(home.settlement_middle);
-      if (home.settlement_lower) all = all.concat(home.settlement_lower);
+      var homeData = yield aniziumFetch("/page/home");
+      if (!homeData || !homeData.success) return { metas: [] };
+      var allAnimes = [];
+      if (homeData.settlement_top) allAnimes = allAnimes.concat(homeData.settlement_top);
+      if (homeData.settlement_middle) allAnimes = allAnimes.concat(homeData.settlement_middle);
+      if (homeData.settlement_lower) allAnimes = allAnimes.concat(homeData.settlement_lower);
       var metas = [];
       var seen = {};
-      for (var i = 0; i < all.length; i++) {
-        var item = all[i];
+      for (var i = 0; i < allAnimes.length; i++) {
+        var item = allAnimes[i];
         if (!item || !item.ID || seen[item.ID]) continue;
         seen[item.ID] = true;
         var isMovie = item.type === "movie";
         metas.push({
-          id: (isMovie ? "anizium:movie:" : "anizium:anime:") + item.ID,
+          id: isMovie ? "anizium:movie:" + item.ID : "anizium:anime:" + item.ID,
           type: isMovie ? "movie" : "series",
           name: item.name || "Anime",
           poster: item.poster || item.details_banner || item.banner,
           background: item.banner || item.details_banner || item.poster,
-          description: item.overview || item.name || "Anizium",
+          description: item.overview || item.name + " - Anizium 4K Anime",
           genres: ["Anime", "Anizium"]
         });
       }
@@ -820,12 +772,79 @@ function getCatalog() {
     }
   });
 }
-module.exports = {
-  getStreams,
-  getSubtitles,
-  getMeta,
-  getCatalog
-};
+function getMeta(args) {
+  return __async(this, null, function* () {
+    try {
+      var rawId = typeof args === "string" ? args : args && args.id ? args.id : "";
+      if (!rawId || rawId.indexOf("anizium:") !== 0) return { meta: null };
+      var cleanId = rawId.replace("anizium:anime:", "").replace("anizium:movie:", "");
+      var dRes = yield aniziumFetch("/anime/get", { id: cleanId });
+      if (!dRes || !dRes.success || !dRes.data) return { meta: null };
+      var d = dRes.data;
+      var name = d.name || "Anime";
+      var poster = d.poster || d.details_banner || d.banner;
+      var bg = d.banner || d.details_banner || poster;
+      var desc = d.overview || name + " - Anizium";
+      var isMovie = d.type === "movie";
+      var videos = [];
+      if (!isMovie && d.seasons && d.seasons.length > 0) {
+        for (var s = 0; s < d.seasons.length; s++) {
+          var season = d.seasons[s];
+          var sNum = season.number || 1;
+          var eps = season.episodes || [];
+          for (var e = 0; e < eps.length; e++) {
+            var ep = eps[e];
+            var eNum = ep.number || e + 1;
+            videos.push({
+              id: "anizium:ep:" + cleanId + ":" + sNum + ":" + eNum,
+              title: ep.name ? sNum + ". Sezon " + eNum + ". B\xF6l\xFCm - " + ep.name : sNum + ". Sezon " + eNum + ". B\xF6l\xFCm",
+              season: sNum,
+              episode: eNum
+            });
+          }
+        }
+      }
+      return {
+        meta: {
+          id: rawId,
+          type: isMovie ? "movie" : "series",
+          name,
+          poster,
+          background: bg,
+          description: desc,
+          genres: ["Anime", "Anizium"],
+          videos: videos.length > 0 ? videos : void 0
+        }
+      };
+    } catch (e2) {
+      return { meta: null };
+    }
+  });
+}
+if (typeof getStreams === "function") {
+  _origGetStreams = getStreams;
+  getStreams = function() {
+    return __async(this, arguments, function* () {
+      var res = yield _origGetStreams.apply(this, arguments);
+      return sortStreamsByQuality(res);
+    });
+  };
+}
+var _origGetStreams;
+if (typeof module !== "undefined") {
+  module.exports = {
+    getStreams,
+    getSubtitles,
+    getCatalog,
+    getMeta
+  };
+}
+if (typeof globalThis !== "undefined") {
+  globalThis.getStreams = getStreams;
+  globalThis.getSubtitles = getSubtitles;
+  globalThis.getCatalog = getCatalog;
+  globalThis.getMeta = getMeta;
+}
 
 if (typeof globalThis !== "undefined" && typeof module !== "undefined" && module.exports) {
   if (module.exports.getStreams) globalThis.getStreams = module.exports.getStreams;
