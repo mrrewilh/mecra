@@ -1,4 +1,4 @@
-/** Mecra provider: yabancidizi | v0.1.7 */
+/** Mecra provider: yabancidizi | v0.1.8 */
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __commonJS = (cb, mod) => function __require() {
   try {
@@ -69,12 +69,6 @@ var require_config = __commonJS({
 var require_http = __commonJS({
   "src/shared/http.js"(exports2, module2) {
     var config2 = require_config();
-    function readJson(res) {
-      return __async(this, null, function* () {
-        var raw = yield res.text();
-        return JSON.parse(raw);
-      });
-    }
     function headers(extra) {
       var out = {
         "User-Agent": config2.ua,
@@ -104,7 +98,7 @@ var require_http = __commonJS({
         try {
           var res = yield fetch(url, options);
           if (!res || !res.ok) return null;
-          return yield readJson(res);
+          return yield res.json();
         } catch (e) {
           return null;
         }
