@@ -27,8 +27,20 @@ start_xvfb() {
   sleep 1
 }
 
+# A window manager is required: without one the toolkit window never gets
+# keyboard focus, so typing into the app silently fails.
+start_wm() {
+  if [ -f "$GUI/openbox.pid" ] && kill -0 "$(cat "$GUI/openbox.pid")" 2>/dev/null; then
+    return
+  fi
+  openbox > "$GUI/openbox.log" 2>&1 &
+  echo $! > "$GUI/openbox.pid"
+  sleep 1
+}
+
 start_app() {
   start_xvfb
+  start_wm
   if [ -f "$GUI/nuvio.pid" ] && kill -0 "$(cat "$GUI/nuvio.pid")" 2>/dev/null; then
     return
   fi
@@ -46,7 +58,6 @@ start_app() {
   WIN=$(xdotool search --name '^Nuvio$' 2>/dev/null | head -1 || true)
   if [ -n "$WIN" ]; then
     xdotool windowmove "$WIN" 0 0 2>/dev/null || true
-    xdotool windowsize "$WIN" 1920 1080 2>/dev/null || true
   fi
 }
 
@@ -54,6 +65,10 @@ stop_all() {
   if [ -f "$GUI/nuvio.pid" ]; then
     kill "$(cat "$GUI/nuvio.pid")" 2>/dev/null || true
     rm -f "$GUI/nuvio.pid"
+  fi
+  if [ -f "$GUI/openbox.pid" ]; then
+    kill "$(cat "$GUI/openbox.pid")" 2>/dev/null || true
+    rm -f "$GUI/openbox.pid"
   fi
   if [ -f "$GUI/xvfb.pid" ]; then
     kill "$(cat "$GUI/xvfb.pid")" 2>/dev/null || true

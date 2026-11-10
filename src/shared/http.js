@@ -1,5 +1,13 @@
 var config = require('./config');
 
+// Nuvio's QuickJS runtime can leave `res.json()` pending forever on some
+// responses, which stalls the whole provider. Read the body as text first and
+// parse it ourselves; `res.text()` always settles.
+async function readJson(res) {
+  var raw = await res.text();
+  return JSON.parse(raw);
+}
+
 function headers(extra) {
   var out = {
     'User-Agent': config.ua,
@@ -28,7 +36,7 @@ async function fetchJson(url, options) {
   try {
     var res = await fetch(url, options);
     if (!res || !res.ok) return null;
-    return await res.json();
+    return await readJson(res);
   } catch (e) {
     return null;
   }
