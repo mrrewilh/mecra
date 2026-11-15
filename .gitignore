@@ -1,0 +1,8 @@
+node_modules/
+.deps/
+.opencode/
+providers/
+dist/
+manifest.json
+*.log
+.DS_Store

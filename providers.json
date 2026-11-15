@@ -1,0 +1,56 @@
+{
+  "name": "Mecra",
+  "author": "Mecra",
+  "description": "Türkçe Nuvio eklentisi",
+  "providers": [
+    {
+      "id": "hdfilmcehennemi",
+      "name": "HDFilmCehennemi",
+      "description": "1080p dual audio (TR/Original) HLS",
+      "supportedTypes": ["movie", "tv"],
+      "formats": ["hls"]
+    },
+    {
+      "id": "filmmakinesi",
+      "name": "Film Makinesi",
+      "description": "Film ve diziler, dual TR/Original HLS",
+      "supportedTypes": ["movie", "tv"],
+      "formats": ["hls"]
+    },
+    {
+      "id": "liderfilmizle",
+      "name": "LiderFilm",
+      "description": "Film ve diziler, dual audio HLS + VTT",
+      "supportedTypes": ["movie", "tv"],
+      "formats": ["hls"]
+    },
+    {
+      "id": "diziyou",
+      "name": "DiziYou",
+      "description": "Türkçe dizi arşivi, HLS + VTT",
+      "supportedTypes": ["tv"],
+      "formats": ["hls"]
+    },
+    {
+      "id": "yabancidizi",
+      "name": "YabancıDizi",
+      "description": "Yabancı diziler, Türkçe altyazı/dublaj",
+      "supportedTypes": ["tv"],
+      "formats": ["hls"]
+    },
+    {
+      "id": "cizgimax",
+      "name": "ÇizgiMax",
+      "description": "Türkçe anime ve çizgi diziler",
+      "supportedTypes": ["tv"],
+      "formats": ["mp4"]
+    },
+    {
+      "id": "anizium",
+      "name": "Anizium",
+      "description": "Türkçe dublaj/altyazılı anime, 4K desteği",
+      "supportedTypes": ["movie", "tv"],
+      "formats": ["mp4", "hls"]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "mecra",
+  "private": true,
+  "description": "Turkish Nuvio plugin",
+  "scripts": {
+    "build": "node build.js",
+    "build:watch": "node build.js --watch",
+    "pretest": "node build.js",
+    "test": "node scripts/test-providers.js",
+    "test:provider": "node scripts/test-providers.js",
+    "version": "node scripts/version.js",
+    "manifest": "node scripts/manifest.js",
+    "dist": "node build.js && node scripts/dist.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "impit": "^0.14.3"
+  },
+  "license": "GPL-3.0"
+}
