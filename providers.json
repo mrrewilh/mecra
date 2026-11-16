@@ -11,13 +11,6 @@
       "formats": ["hls"]
     },
     {
-      "id": "filmmakinesi",
-      "name": "Film Makinesi",
-      "description": "Film ve diziler, dual TR/Original HLS",
-      "supportedTypes": ["movie", "tv"],
-      "formats": ["hls"]
-    },
-    {
       "id": "liderfilmizle",
       "name": "LiderFilm",
       "description": "Film ve diziler, dual audio HLS + VTT",

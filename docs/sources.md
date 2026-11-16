@@ -9,7 +9,6 @@ file together when a site moves.
 | `liderfilmizle.vip` | `/api/search.php` → page `window._vs` → `/vod/` or `/embed-` | The site 301s to `liderfilmizle.nl`; the player host only accepts a Referer from the domain the page was served from, so keep `res.url` |
 | `diziyou.one` | `/?s=` search → episode page → `#diziyouPlayer` | Separate sub (`/episodes/id/`) and dub (`_tr`) rows |
 | `hdfilmcehennemi.nl` | search → movie/episode page → `video/embed/ID/` iframe on `hdfilmcehennemi.mobi` → packed `sources` script | Dual TR/Original HLS; TV section is `/yabancidiziizle-14/` |
-| `filmmakinesi.to` | `/arama/?s=` → `.film-list` card → `closeload.filmmakinesi.to/video/embed/ID/` → packed `sources` | Dual TR/Original HLS; same `closeload` CMS as HDFilm; frame headers required |
 | `cizgimax.online` | `/api/search/suggest/` → episode slug → inline `serversByLang` | Dzen/Tau MP4, site HLS relay, `/oynat/` + Sibnet/ok.ru embeds; anime + cartoons |
 | Anizium | its own `/page/search`, `/anime/get`, `/anime/source` | Requires the weekly `Cf-Control` XOR header |
 

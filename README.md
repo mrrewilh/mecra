@@ -14,7 +14,7 @@ https://raw.githubusercontent.com/mrrewilh/mecra/dist/manifest.json
 
 ## Providers
 
-HDFilmCehennemi, Film Makinesi, LiderFilm, DiziYou, YabancıDizi, ÇizgiMax, Anizium.
+HDFilmCehennemi, LiderFilm, DiziYou, YabancıDizi, ÇizgiMax, Anizium.
 
 ## Develop
 

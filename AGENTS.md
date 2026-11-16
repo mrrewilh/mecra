@@ -5,7 +5,7 @@ Own plugin. Plugin-only; sports deferred.
 ## Sources
 
 `yabancidizi.news`, `liderfilmizle.vip`, `diziyou.one`, `cizgimax.online`,
-`hdfilmcehennemi.nl`, `filmmakinesi.to`, plus Anizium. Domains rotate — keep them in
+`hdfilmcehennemi.nl`, plus Anizium. Domains rotate — keep them in
 `src/shared/config.js`. Site traps: `docs/sources.md`.
 
 ## Rules

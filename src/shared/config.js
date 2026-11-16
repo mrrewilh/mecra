@@ -19,7 +19,6 @@ module.exports = {
   sites: {
     hdfilmcehennemi: 'https://www.hdfilmcehennemi.nl',
     hdfilmcehennemiEmbed: 'https://hdfilmcehennemi.mobi',
-    filmmakinesi: 'https://filmmakinesi.to',
     diziyou: 'https://www.diziyou.one',
     diziyouStorage: 'https://storage.diziyou.one',
     yabancidizi: 'https://yabancidizi.news',

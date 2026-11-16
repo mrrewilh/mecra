@@ -35,8 +35,6 @@ function shortUrl(url) {
 const cases = [
   { name: 'hdfilmcehennemi', id: '872585', type: 'movie', label: 'Oppenheimer' },
   { name: 'hdfilmcehennemi', id: '66732', type: 'tv', season: 1, episode: 1, label: 'Stranger Things S1E1' },
-  { name: 'filmmakinesi', id: '872585', type: 'movie', label: 'Oppenheimer' },
-  { name: 'filmmakinesi', id: '1396', type: 'tv', season: 1, episode: 1, label: 'Breaking Bad S1E1' },
   { name: 'liderfilmizle', id: '872585', type: 'movie', label: 'Oppenheimer' },
   { name: 'liderfilmizle', id: '1396', type: 'tv', season: 1, episode: 1, label: 'Breaking Bad S1E1' },
   { name: 'diziyou', id: '1396', type: 'tv', season: 1, episode: 1, label: 'Breaking Bad S1E1' },
