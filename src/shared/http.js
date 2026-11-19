@@ -50,11 +50,38 @@ function frameHeaders(parentUrl, targetUrl) {
   });
 }
 
+var DEFAULT_TIMEOUT = 12000;
+
+function withTimeout(promise, ms) {
+  if (typeof setTimeout !== 'function') return promise;
+  return new Promise(function (resolve, reject) {
+    var timer = setTimeout(function () {
+      reject(new Error('timeout'));
+    }, ms || DEFAULT_TIMEOUT);
+    promise.then(
+      function (value) {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      function (error) {
+        clearTimeout(timer);
+        reject(error);
+      }
+    );
+  });
+}
+
+function request(url, options) {
+  var ms = (options && options.timeout) || DEFAULT_TIMEOUT;
+  return withTimeout(fetch(url, options), ms);
+}
+
 async function fetchText(url, options) {
   try {
-    var res = await fetch(url, options);
+    var ms = (options && options.timeout) || DEFAULT_TIMEOUT;
+    var res = await request(url, options);
     if (!res || !res.ok) return null;
-    return await res.text();
+    return await withTimeout(res.text(), ms);
   } catch (e) {
     return null;
   }
@@ -65,11 +92,12 @@ async function fetchText(url, options) {
 // domain the page actually lives on.
 async function fetchPage(url, options) {
   try {
-    var res = await fetch(url, options);
+    var ms = (options && options.timeout) || DEFAULT_TIMEOUT;
+    var res = await request(url, options);
     if (!res || !res.ok) return null;
     return {
       url: res.url || url,
-      html: await res.text()
+      html: await withTimeout(res.text(), ms)
     };
   } catch (e) {
     return null;
@@ -78,9 +106,10 @@ async function fetchPage(url, options) {
 
 async function fetchJson(url, options) {
   try {
-    var res = await fetch(url, options);
+    var ms = (options && options.timeout) || DEFAULT_TIMEOUT;
+    var res = await request(url, options);
     if (!res || !res.ok) return null;
-    return await res.json();
+    return await withTimeout(res.json(), ms);
   } catch (e) {
     return null;
   }
@@ -88,7 +117,7 @@ async function fetchJson(url, options) {
 
 async function fetchStatus(url, options) {
   try {
-    var res = await fetch(url, options);
+    var res = await request(url, options);
     return res ? res.status : 0;
   } catch (e) {
     return 0;

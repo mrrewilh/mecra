@@ -22,7 +22,8 @@
       "name": "DiziYou",
       "description": "Türkçe dizi arşivi, HLS + VTT",
       "supportedTypes": ["tv"],
-      "formats": ["hls"]
+      "formats": ["hls"],
+      "enabled": false
     },
     {
       "id": "yabancidizi",
@@ -36,7 +37,8 @@
       "name": "ÇizgiMax",
       "description": "Türkçe anime ve çizgi diziler",
       "supportedTypes": ["tv"],
-      "formats": ["mp4"]
+      "formats": ["mp4"],
+      "enabled": false
     },
     {
       "id": "anizium",
