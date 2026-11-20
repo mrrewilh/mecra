@@ -10,11 +10,6 @@ disabled until they get working domains. Site traps: `docs/sources.md`.
 
 ## Rules
 
-- **No hacks.** If a stream needs the site's DRM/AES envelope decrypted, a
-  proof-of-work or anti-bot gate solved, a crypto/obfuscation module bundled, or
-  keys/tokens added to reach the player, drop the provider. Only the site's own
-  search/page/player endpoints are allowed. A player that only answers a
-  Chrome-impersonating client is a hack. Selcukflix was removed for this.
 - **Scrape the target site.** Do not use another site's API as a content source.
 - **Speed is a feature.** A few requests, a few seconds, no brute force, no
   redundant fetches, no bloat. If it is slow, it is broken.
