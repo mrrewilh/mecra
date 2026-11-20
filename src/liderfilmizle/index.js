@@ -66,8 +66,9 @@ async function resolveVod(sourceUrl, pageUrl) {
   var html = await http.fetchText(sourceUrl, { headers: http.frameHeaders(pageUrl, sourceUrl) });
   if (!html) return null;
 
-  var file = html.match(/file:\s*["'](\/player\/stream\.php\?url=[^"']+)["']/i);
-  if (!file) file = html.match(/sources:\s*\[\s*\{\s*file:\s*["']([^"']+)["']/i);
+  // Prefer the jwplayer source; a generic `file:` match hits subtitle entries first.
+  var file = html.match(/sources:\s*\[\s*\{\s*file:\s*["']([^"']+)["']/i);
+  if (!file) file = html.match(/file:\s*["'](\/player\/stream\.php\?url=[^"']+)["']/i);
   if (!file) return null;
 
   var streamUrl = absoluteUrl(file[1].replace(/\\/g, ''), sourceUrl);
@@ -134,7 +135,10 @@ async function resolveEmbed(sourceUrl, pageUrl) {
 
 async function resolveSource(sourceUrl, pageUrl) {
   if (!sourceUrl || sourceUrl.indexOf('youtube.com') !== -1) return null;
-  if (sourceUrl.indexOf('/vod/') !== -1) return resolveVod(sourceUrl, pageUrl);
+  // Player pages now expose a direct jwplayer source; read that first.
+  var direct = await resolveVod(sourceUrl, pageUrl);
+  if (direct) return direct;
+  if (sourceUrl.indexOf('/vod/') !== -1) return null;
   return resolveEmbed(sourceUrl, pageUrl);
 }
 
