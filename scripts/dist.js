@@ -32,13 +32,6 @@ function main() {
   }
 
   fs.writeFileSync(path.join(DIST, 'manifest.json'), JSON.stringify(data, null, 2) + '\n');
-
-  const extra = ['cloudstream-repo.json', 'cloudstream-plugins.json'];
-  for (const file of extra) {
-    const source = path.join(ROOT, file);
-    if (fs.existsSync(source)) fs.copyFileSync(source, path.join(DIST, file));
-  }
-
   console.log('dist: ' + copied + '/' + data.scrapers.length + ' providers, version ' + version);
 }
 

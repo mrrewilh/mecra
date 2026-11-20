@@ -1,8 +1,0 @@
-{
-  "name": "CloudStream TR (mirror)",
-  "description": "FilmMakinesi and HDFilmCehennemi via jsDelivr",
-  "manifestVersion": 1,
-  "pluginLists": [
-    "https://raw.githubusercontent.com/mrrewilh/mecra/dist/cloudstream-plugins.json"
-  ]
-}
