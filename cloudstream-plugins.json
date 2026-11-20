@@ -18,7 +18,7 @@
     "version": 110,
     "internalName": "FilmMakinesi",
     "description": "FilmMakinesi - En iyi 1080p Full HD film ve dizi platformu",
-    "url": "https://cdn.jsdelivr.net/gh/Emre-Kahveci/CloudStreamHub@builds/FilmMakinesi.cs3",
+    "url": "https://raw.githubusercontent.com/Emre-Kahveci/CloudStreamHub/builds/FilmMakinesi.cs3",
     "name": "FilmMakinesi"
   },
   {
@@ -40,7 +40,7 @@
     "version": 111,
     "internalName": "HDFilmCehennemi",
     "description": "HDFilmCehennemi - Yüksek kalitede Türkçe dublaj ve altyazılı film ve dizi izleme platformu",
-    "url": "https://cdn.jsdelivr.net/gh/Emre-Kahveci/CloudStreamHub@builds/HDFilmCehennemi.cs3",
+    "url": "https://raw.githubusercontent.com/Emre-Kahveci/CloudStreamHub/builds/HDFilmCehennemi.cs3",
     "name": "HDFilmCehennemi"
   }
 ]

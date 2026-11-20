@@ -3,6 +3,6 @@
   "description": "FilmMakinesi and HDFilmCehennemi via jsDelivr",
   "manifestVersion": 1,
   "pluginLists": [
-    "https://cdn.jsdelivr.net/gh/mrrewilh/mecra@main/cloudstream-plugins.json"
+    "https://raw.githubusercontent.com/mrrewilh/mecra/dist/cloudstream-plugins.json"
   ]
 }
