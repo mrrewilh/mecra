@@ -6,6 +6,13 @@ var quality = require('../shared/quality');
 var hls = require('../shared/hls');
 
 var BASE = config.sites.liderfilmizle;
+var PLAYER = config.sites.liderfilmPlay;
+
+// The site can go dark while the player still serves known embeds. Map TMDB id
+// to the embed id so those titles stay playable without the dead site.
+var EMBED_MAP = {
+  '1368337': 'v1x0507c5a5'
+};
 var PLAY = config.sites.liderfilmPlay;
 
 function pageHeaders(extra) {
@@ -217,6 +224,34 @@ async function loadPage(url) {
 
 async function getStreams(id, mediaType, season, episode) {
   try {
+    var embedId = EMBED_MAP[String(id)];
+    if (embedId) {
+      var sourceUrl = PLAYER + '/vx/' + embedId;
+      var resolved = await resolveSource(sourceUrl, BASE + '/');
+      if (resolved) {
+        var audio = await hls.inspect(resolved.url, resolved.headers);
+        var dual = audio.dual ? hls.label(audio.tracks) : '';
+        var title = dual
+          ? 'LiderFilm - Dual [' + dual + '] (' + resolved.quality + ')'
+          : 'LiderFilm - Türkçe (' + resolved.quality + ')';
+        var playUrl = resolved.url.indexOf('#') === -1 ? resolved.url + '#.m3u8' : resolved.url;
+        console.log('[LiderFilm] ' + embedId + ' -> ' + title);
+        return [{
+          name: 'LiderFilm',
+          title: title,
+          url: playUrl,
+          quality: resolved.quality,
+          format: 'hls',
+          isHls: true,
+          language: 'tr',
+          provider: 'liderfilmizle',
+          headers: resolved.headers,
+          behaviorHints: { notWebReady: true, proxyHeaders: { request: resolved.headers } },
+          subtitles: resolved.subtitles
+        }];
+      }
+    }
+
     var info = await tmdb.resolveTmdbInfo(id, mediaType || 'movie');
     var show = await findShow(info);
     if (!show) return [];

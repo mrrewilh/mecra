@@ -5,11 +5,12 @@ file together when a site moves.
 
 ## Status (2026-11)
 
-- Enabled: LiderFilm, Anizium.
+- Working natively: DiziYou (`diziyou.love`, storage `storage.diziyou.love`),
+  ÇizgiMax (`cizgimax.online`), Anizium, LiderFilm embeds.
+- LiderFilm site (`liderfilmizle.nl/.vip`) went dark in Nov 2026; known embeds are
+  resolved directly from `play.liderfilm.cc` via a small TMDB-id map.
 - Cloudflare-blocked for native fetch: HDFilmCehennemi, YabancıDizi. They stay in
   the manifest but may return nothing on networks where the challenge triggers.
-- Disabled: DiziYou (`diziyou.one` is dead; `diziyou.net` is a different
-  WordPress CMS), ÇizgiMax (`cizgimax.online` returns 503).
 
 | Site | How it is scraped | Notes |
 |---|---|---|
